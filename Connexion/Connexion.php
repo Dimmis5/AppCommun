@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     if (!$username || !$password) {
-        $errors[] = "Veuillez remplir tous les champs.";
+        $errors[] = "Veuillez remplir tous les champs;.";
     } else {
         $users = load_users();
         if (!isset($users[$username]) || !password_verify($password, $users[$username])) {
