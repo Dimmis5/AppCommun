@@ -1,0 +1,23 @@
+<DOCTYPE html>
+  <html lang="fr">
+    <head>
+      <meta charset="UFT-8">
+      <title>Mesure du capteur</title>
+      <script>
+        function afficherdonnees(){
+          fetch(donnees.php)
+            .then(r=> r.json())
+            .then(data => {
+              document.getElementById('degres').textContent = data.degrees + "°";
+              document.getElementById('heure').textecontent = data.time;
+            });
+        }
+        setInterval(afficherdonnees , 2000);
+        window.onload = afficherdonnees;
+      </script>
+    </head>
+    <body>
+      <h1>Donnees du capteur</h1>
+      <p>Degrés : <span id="degrees">--</span></p>
+      <p>Heure : <span id="heure">--</span></p>
+    </body>
