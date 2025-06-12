@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "bdd");
+require_once 'connect.php';
 $sql = "SELECT * FROM G7E ORDER BY Time DESC LIMIT 10";
 $result = $conn->query($sql);
 ?>
