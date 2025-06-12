@@ -1,4 +1,5 @@
 <?php
+require_once 'connect.php';
 try{
   $pdo = new PDO ('mysql:host=localhost;dbname=bdd;charset=utf8','root','');
   $stmt=$pdo->query("SELECT* FROM G7E ORDER BY Time DESC LIMIT 1");
