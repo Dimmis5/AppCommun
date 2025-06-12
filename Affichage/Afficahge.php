@@ -11,7 +11,7 @@ $result = $conn->query($sql);
     <title>Données G7E</title>
 </head>
 <body>
-    <h2>Historique des degrés mesurés</h2>
+    <h2>Historique des degrés récupérés</h2>
     <table border="1">
         <tr><th>Heure</th><th>Degrés</th></tr>
         <?php while($row = $result->fetch_assoc()): ?>
