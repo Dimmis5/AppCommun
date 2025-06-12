@@ -5,7 +5,7 @@
   <title>Mesure du capteur</title>
   <script>
     function afficherdonnees() {
-      fetch('lecturedesdonnees.php')
+      fetch('lecturedonnees.php')
         .then(response => response.json())
         .then(data => {
           document.getElementById('degrees').textContent = data.degrees + "°";
