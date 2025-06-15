@@ -17,7 +17,7 @@
           <a href="Accueil.php">Accueil</a>
           <a href="../Capteur/Capteur.html">Capteur & Actionneurs</a>
           <a href="../Capteur/Controler.html">Contôler</a>
-          <a href="../Affichage/Affichage.php">Donnée capteur</a>
+          <a href="../Affichage/AffichageV.php">Donnée capteur</a>
           <a href="../Connexion/Connexion.php">Connexion</a>
      </nav>
 

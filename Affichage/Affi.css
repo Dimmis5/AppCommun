@@ -1,0 +1,103 @@
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9fafb;
+    color: #333;
+    margin: 40px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Container tableau */
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* Caption */
+  caption {
+    caption-side: top;
+    font-size: 1.8em;
+    font-weight: 600;
+    padding: 20px 0;
+    color: #222;
+  }
+
+  /* En-tête */
+  thead th {
+    background: #3a86ff;
+    color: #fff;
+    padding: 14px 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    border-bottom: 2px solid #2f6ad3;
+  }
+
+  /* Cellules */
+  tbody td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: center;
+  }
+
+  /* Alternance couleur des lignes */
+  tbody tr:nth-child(even) {
+    background: #f7f9fc;
+  }
+
+  /* Effet hover sur les lignes */
+  tbody tr:hover {
+    background: #d0e7ff;
+    transition: background-color 0.3s ease;
+  }
+
+  /* Message Aucune donnée */
+  tbody tr td[colspan="4"] {
+    font-style: italic;
+    color: #999;
+  }
+
+  /* Responsive simple */
+  @media (max-width: 480px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    tbody tr {
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+    tbody td {
+      border: none;
+      position: relative;
+      padding-left: 50%;
+      text-align: left;
+    }
+    tbody td::before {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: 600;
+      color: #3a86ff;
+    }
+    tbody td:nth-of-type(1)::before { content: "ID"; }
+    tbody td:nth-of-type(2)::before { content: "Température (°C)"; }
+    tbody td:nth-of-type(3)::before { content: "Humidité (%)"; }
+    tbody td:nth-of-type(4)::before { content: "Date de la mesure"; }
+  }
