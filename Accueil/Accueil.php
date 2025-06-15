@@ -17,13 +17,14 @@ if ($isLoggedIn) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accueil - Domotique Rideau & Lampe</title>
+    <title>Tempérium</title>
+    <link rel="icon" href="../logo/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="Accueil.css">
 <body>
     <header class="spacing">
         <div class="header-content">
             <h1>Projet Domotique : Gestion Rideau & Lampe</h1>
-            <div class="company-name">Tempérium</div>
+            <div class="company-name">  </div>
             <div class = "top-right-logo"><img src="../logo/logo.png" alt="logo" class="logo-img"></div>
         </div>
     </header>
