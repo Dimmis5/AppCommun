@@ -14,13 +14,12 @@
      </header>
 
      <nav>
-          <a href="Accueil.html">Accueil</a>
+          <a href="Accueil.php">Accueil</a>
           <a href="../Capteur/Capteur.html">Capteur & Actionneurs</a>
-          <a href ="../Capteur/Controler.html">Contôler</a>
-          <a href = "../Capteur/Donnees.html">Donnée capteur</a>
+          <a href="../Capteur/Controler.html">Contôler</a>
+          <a href="../Affichage/Affichage.php">Donnée capteur</a>
           <a href="../Connexion/Connexion.php">Connexion</a>
      </nav>
-
 
      <footer>
           &copy; 2025 Projet Domotique - Tous droits réservés
