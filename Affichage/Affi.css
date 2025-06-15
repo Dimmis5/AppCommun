@@ -1,103 +1,422 @@
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f9fafb;
-    color: #333;
-    margin: 40px 20px;
-    display: flex;
-    justify-content: center;
-  }
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-  /* Container tableau */
-  table {
-    border-collapse: separate;
-    border-spacing: 0;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+
+#table-container {
+    max-width: 900px;
+    margin: 40px auto;
+    position: relative;
+}
+
+table {
     width: 100%;
-    max-width: 720px;
-    background: #fff;
-    box-shadow: 0 6px 18px rgb(0 0 0 / 0.1);
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
     overflow: hidden;
-  }
+    animation: slideInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+}
 
-  /* Caption */
-  caption {
-    caption-side: top;
-    font-size: 1.8em;
-    font-weight: 600;
-    padding: 20px 0;
-    color: #222;
-  }
+table.no-animation {
+    animation: none !important;
+}
 
-  /* En-tête */
-  thead th {
-    background: #3a86ff;
-    color: #fff;
-    padding: 14px 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+table.no-animation td {
+    transition: all 0.2s ease;
+}
+
+table.no-animation tr:hover {
+    transform: scale(1.01);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+table::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+}
+
+caption {
+    color: white;
+    font-size: 2.5rem;
     font-weight: 700;
-    border-bottom: 2px solid #2f6ad3;
-  }
+    margin-bottom: 30px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.5px;
+    position: relative;
+}
 
-  /* Cellules */
-  tbody td {
-    padding: 14px 12px;
-    border-bottom: 1px solid #e2e8f0;
+caption::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+    border-radius: 2px;
+    animation: colorShift 3s ease-in-out infinite;
+}
+
+@keyframes colorShift {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; transform: translateX(-50%) scaleX(1.2); }
+}
+
+thead {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+th {
+    padding: 25px 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
     text-align: center;
-  }
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+}
 
-  /* Alternance couleur des lignes */
-  tbody tr:nth-child(even) {
-    background: #f7f9fc;
-  }
+th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: linear-gradient(45deg, #ff6b6b, #feca57);
+    transition: width 0.3s ease;
+}
 
-  /* Effet hover sur les lignes */
-  tbody tr:hover {
-    background: #d0e7ff;
-    transition: background-color 0.3s ease;
-  }
+th:hover::after {
+    width: 80%;
+}
 
-  /* Message Aucune donnée */
-  tbody tr td[colspan="4"] {
-    font-style: italic;
-    color: #999;
-  }
+tbody {
+    background: rgba(255, 255, 255, 0.05);
+}
 
-  /* Responsive simple */
-  @media (max-width: 480px) {
-    table, thead, tbody, th, td, tr {
-      display: block;
+td {
+    padding: 30px 20px;
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+tr {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+tr::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+tr:hover::before {
+    opacity: 1;
+}
+
+tr:hover {
+    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+tr:hover td {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Styles spécifiques pour les données */
+td:nth-child(1) {
+    color: #feca57;
+    font-weight: 600;
+}
+
+td:nth-child(2) {
+    color: #ff6b6b;
+    font-weight: 700;
+    font-size: 1.4rem;
+    position: relative;
+}
+
+td:nth-child(2)::after {
+    content: '🌡️';
+    margin-left: 8px;
+    animation: float 2s ease-in-out infinite;
+}
+
+td:nth-child(3) {
+    color: #48dbfb;
+    font-weight: 700;
+    font-size: 1.4rem;
+    position: relative;
+}
+
+td:nth-child(3)::after {
+    content: '💧';
+    margin-left: 8px;
+    animation: float 2s ease-in-out infinite 0.5s;
+}
+
+td:nth-child(4) {
+    color: #ff9ff3;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Message d'erreur */
+td[colspan="4"] {
+    color: #feca57;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 50px;
+    background: rgba(254, 202, 87, 0.1);
+    border-radius: 12px;
+    margin: 20px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
     }
-    thead tr {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
+    50% { 
+        opacity: 0.8; 
+        transform: scale(1.02);
     }
-    tbody tr {
-      margin-bottom: 20px;
-      box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
-      border-radius: 8px;
-      padding: 12px;
-      background: #fff;
+}
+
+/* Indicateur de chargement */
+.loading-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    padding: 10px 20px;
+    color: white;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.3s ease;
+}
+
+.loading-indicator.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.loading-indicator::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Bouton Accueil */
+.home-button-container {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    z-index: 1000;
+}
+
+.home-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.home-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.home-button:hover::before {
+    left: 100%;
+}
+
+.home-button:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.home-button:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.home-icon {
+    font-size: 1.2rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-3px); }
+    60% { transform: translateY(-2px); }
+}
+
+/* Responsive pour le bouton */
+@media (max-width: 768px) {
+    .home-button-container {
+        top: 20px;
+        left: 20px;
     }
-    tbody td {
-      border: none;
-      position: relative;
-      padding-left: 50%;
-      text-align: left;
+    
+    .home-button {
+        padding: 10px 16px;
+        font-size: 0.9rem;
     }
-    tbody td::before {
-      position: absolute;
-      top: 14px;
-      left: 16px;
-      width: 45%;
-      padding-right: 10px;
-      white-space: nowrap;
-      font-weight: 600;
-      color: #3a86ff;
+}
+
+@media (max-width: 480px) {
+    .home-button-container {
+        top: 15px;
+        left: 15px;
     }
-    tbody td:nth-of-type(1)::before { content: "ID"; }
-    tbody td:nth-of-type(2)::before { content: "Température (°C)"; }
-    tbody td:nth-of-type(3)::before { content: "Humidité (%)"; }
-    tbody td:nth-of-type(4)::before { content: "Date de la mesure"; }
-  }
+    
+    .home-button {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .home-icon {
+        font-size: 1rem;
+    }
+}
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    #table-container {
+        margin: 20px auto;
+    }
+    
+    caption {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+    
+    th, td {
+        padding: 15px 10px;
+        font-size: 1rem;
+    }
+    
+    td:nth-child(2), td:nth-child(3) {
+        font-size: 1.2rem;
+    }
+    
+    table {
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    caption {
+        font-size: 1.5rem;
+    }
+    
+    th, td {
+        padding: 12px 8px;
+        font-size: 0.9rem;
+    }
+    
+    td:nth-child(2), td:nth-child(3) {
+        font-size: 1.1rem;
+    }
+    
+    th {
+        font-size: 0.8rem;
+    }
+}

@@ -8,7 +8,9 @@ $password = 'monpassword';
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $stmt = $pdo->query("SELECT * FROM mesures ORDER BY date_mesure DESC");
+    
+    // Modification : LIMIT 1 pour récupérer seulement la dernière mesure
+    $stmt = $pdo->query("SELECT * FROM mesures ORDER BY date_mesure DESC LIMIT 1");
     $mesures = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Erreur de connexion ou de requête : " . $e->getMessage());
@@ -18,7 +20,7 @@ try {
 function afficherTableau($mesures) {
     ?>
     <table>
-        <caption>Mesures de Température et Humidité</caption>
+        <caption>Dernière Mesure de Température et Humidité</caption>
         <thead>
             <tr>
                 <th>ID</th>
@@ -60,16 +62,25 @@ if ($isAjax) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <title>Affichage des mesures DHT11</title>
+    <title>Dernière mesure DHT11</title>
     <link rel="stylesheet" href="Affi.css">
 </head>
 <body>
+
+    <div class="home-button-container">
+        <a href="../Accueil/Accueil.php" class="home-button">
+            <span class="home-icon">🏠</span>
+            Accueil
+        </a>
+    </div>
 
     <div id="table-container">
         <?php afficherTableau($mesures); ?>
     </div>
 
     <script>
+        let isInitialLoad = true;
+
         async function chargerTableau() {
             try {
                 const response = await fetch(window.location.href, {
@@ -77,7 +88,26 @@ if ($isAjax) {
                 });
                 if (!response.ok) throw new Error('Erreur réseau');
                 const html = await response.text();
-                document.getElementById('table-container').innerHTML = html;
+                
+                const container = document.getElementById('table-container');
+                
+                if (isInitialLoad) {
+                    // Premier chargement : animation normale
+                    container.innerHTML = html;
+                    isInitialLoad = false;
+                } else {
+                    // Mises à jour suivantes : transition fluide sans repop
+                    const newTable = document.createElement('div');
+                    newTable.innerHTML = html;
+                    const newTableElement = newTable.querySelector('table');
+                    
+                    if (newTableElement) {
+                        newTableElement.style.animation = 'none';
+                        newTableElement.classList.add('no-animation');
+                        container.innerHTML = '';
+                        container.appendChild(newTableElement);
+                    }
+                }
             } catch (e) {
                 document.getElementById('table-container').innerHTML = 'Erreur lors du chargement des données.';
                 console.error(e);
@@ -87,7 +117,7 @@ if ($isAjax) {
         // Chargement initial
         chargerTableau();
 
-        // Rafraîchir toutes les 5 secondes
+        // Rafraîchir toutes les 2 secondes
         setInterval(chargerTableau, 2000);
     </script>
 
