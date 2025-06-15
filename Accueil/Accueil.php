@@ -24,7 +24,7 @@ if ($isLoggedIn) {
     <header class="spacing">
         <div class="header-content">
             <h1>Projet Domotique : Gestion Rideau & Lampe</h1>
-            <div class="company-name">  </div>
+            <div class="company-name"> Tempérium </div>
             <div class = "top-right-logo"><img src="../logo/logo.png" alt="logo" class="logo-img"></div>
         </div>
     </header>
