@@ -11,21 +11,20 @@ if ($isLoggedIn) {
 
 <!DOCTYPE html>
 <html lang="fr">
-
-<!DOCTYPE html>
-<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tempérium</title>
     <link rel="icon" href="../logo/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="Accueil.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
 <body>
     <header class="spacing">
         <div class="header-content">
             <h1>Projet Domotique : Gestion Rideau & Lampe</h1>
             <div class="company-name"> Tempérium </div>
-            <div class = "top-right-logo"><img src="../logo/logo.png" alt="logo" class="logo-img"></div>
+            <div class="top-right-logo"><img src="../logo/logo.png" alt="logo" class="logo-img"></div>
         </div>
     </header>
 
@@ -46,13 +45,22 @@ if ($isLoggedIn) {
 
     <nav>
         <a href="Accueil.php">Accueil</a>
-        <a href="<?php echo $isLoggedIn ? '../Capteur/Capteur.html' : '../Connexion/Connexion.php'; ?>">Capteur & Actionneurs</a>
-        <a href="<?php echo $isLoggedIn ? '../Capteur/Controler.html' : '../Connexion/Connexion.php'; ?>">Contôler</a>
-        <a href="<?php echo $isLoggedIn ? '../Affichage/Affichage3.php' : '../Connexion/Connexion.php'; ?>">Donnée capteur</a>
-
+        <a href="<?php echo $isLoggedIn ? '../Affichage/Affichage3.php' : '../Connexion/Connexion.php'; ?>">Donnée capteur & Actionneurs </a>
     </nav>
 
     <?php if ($isLoggedIn): ?>
+        <!-- Conteneur des graphiques -->
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <h3>Évolution de la Température (100 dernières mesures)</h3>
+                <canvas id="temperatureChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <h3>Évolution de l'Humidité (100 dernières mesures)</h3>
+                <canvas id="humidityChart"></canvas>
+            </div>
+        </div>
+
         <div id="table-container">
             <?php
             // Paramètres de connexion à la base MySQL
@@ -65,7 +73,7 @@ if ($isLoggedIn) {
                 $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 
-                // Récupérer seulement la dernière mesure
+                // Récupérer seulement la dernière mesure pour le tableau
                 $stmt = $pdo->query("SELECT * FROM mesures ORDER BY date_mesure DESC LIMIT 1");
                 $mesures = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
@@ -104,6 +112,128 @@ if ($isLoggedIn) {
         
         <script>
             let isInitialLoad = true;
+            let temperatureChart = null;
+            let humidityChart = null;
+
+            // Configuration des graphiques
+            const chartConfig = {
+                type: 'line',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                maxTicksLimit: 10
+                            }
+                        },
+                        y: {
+                            display: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.8)'
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            radius: 2,
+                            hoverRadius: 5
+                        },
+                        line: {
+                            tension: 0.3,
+                            borderWidth: 2
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            };
+
+            // Initialiser les graphiques
+            function initCharts() {
+                const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+                const humCtx = document.getElementById('humidityChart').getContext('2d');
+
+                temperatureChart = new Chart(tempCtx, {
+                    ...chartConfig,
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Température (°C)',
+                            data: [],
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                            fill: true
+                        }]
+                    }
+                });
+
+                humidityChart = new Chart(humCtx, {
+                    ...chartConfig,
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Humidité (%)',
+                            data: [],
+                            borderColor: '#48dbfb',
+                            backgroundColor: 'rgba(72, 219, 251, 0.1)',
+                            fill: true
+                        }]
+                    }
+                });
+            }
+
+            // Charger les données pour les graphiques
+            async function chargerDonneesGraphiques() {
+                try {
+                    const response = await fetch('get_chart_data.php', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    
+                    if (!response.ok) throw new Error('Erreur réseau');
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.mesures) {
+                        const labels = data.mesures.map(mesure => {
+                            const date = new Date(mesure.date_mesure);
+                            return date.toLocaleTimeString('fr-FR', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                            });
+                        });
+                        
+                        const temperatures = data.mesures.map(mesure => parseFloat(mesure.temperature));
+                        const humidites = data.mesures.map(mesure => parseFloat(mesure.humidite));
+                        
+                        // Mettre à jour les graphiques
+                        temperatureChart.data.labels = labels;
+                        temperatureChart.data.datasets[0].data = temperatures;
+                        temperatureChart.update('none');
+                        
+                        humidityChart.data.labels = labels;
+                        humidityChart.data.datasets[0].data = humidites;
+                        humidityChart.update('none');
+                    }
+                } catch (e) {
+                    console.error('Erreur lors du chargement des données graphiques:', e);
+                }
+            }
 
             async function chargerTableau() {
                 try {
@@ -138,10 +268,20 @@ if ($isLoggedIn) {
                 }
             }
 
-            // Rafraîchir toutes les 2 secondes
-            setInterval(chargerTableau, 2000);
+            // Initialiser au chargement de la page
+            document.addEventListener('DOMContentLoaded', function() {
+                initCharts();
+                chargerDonneesGraphiques();
+                
+                // Rafraîchir les graphiques toutes les 10 secondes
+                setInterval(chargerDonneesGraphiques, 2000);
+                
+                // Rafraîchir le tableau toutes les 2 secondes
+                setInterval(chargerTableau, 2000);
+            });
         </script>
     <?php endif; ?>
+    
 
     <footer>
         &copy; 2025 Projet Domotique - Tous droits réservés

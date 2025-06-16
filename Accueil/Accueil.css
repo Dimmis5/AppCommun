@@ -1,6 +1,20 @@
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Variables CSS pour une meilleure maintenance */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --text-white: #ffffff;
+    --text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --shadow-glass: 0 10px 30px rgba(0, 0, 0, 0.15);
+    --border-radius: 20px;
+    --chart-bg: rgba(255, 255, 255, 0.08);
+    --chart-border: rgba(255, 255, 255, 0.15);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -9,19 +23,26 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: var(--primary-gradient);
     background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    color: var(--text-white);
 }
 
-/* Header principal */
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* ============= HEADER ============= */
 header {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid var(--glass-border);
     padding: 40px 20px;
     text-align: center;
     position: relative;
@@ -32,25 +53,38 @@ header::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
     background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
 }
 
 @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.header-content {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
 }
 
 header h1 {
-    color: white;
+    color: var(--text-white);
     font-size: 3rem;
     font-weight: 700;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-shadow: var(--text-shadow);
     letter-spacing: -1px;
     position: relative;
     z-index: 1;
+    animation: titleSlideIn 1s ease-out;
 }
 
 @keyframes titleSlideIn {
@@ -74,6 +108,7 @@ header h1::after {
     height: 4px;
     background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
     border-radius: 2px;
+    animation: colorShift 2s ease-in-out infinite;
 }
 
 @keyframes colorShift {
@@ -81,7 +116,38 @@ header h1::after {
     50% { opacity: 0.7; transform: translateX(-50%) scaleX(1.3); }
 }
 
-/* Navigation */
+/* Logo et nom de l'entreprise */
+.top-right-logo {
+    position: absolute;
+    top: -30px;
+    left: -350px;
+    z-index: 10;
+}
+
+.logo-img {
+    height: 80px;
+    width: auto;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+}
+
+.company-name {
+    position: absolute;
+    top: -30px;
+    right: -350px;
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--text-white);
+    text-shadow: var(--text-shadow);
+    background: rgba(233, 7, 7, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(238, 5, 5, 0.2);
+    z-index: 10;
+}
+
+/* ============= NAVIGATION ============= */
 nav {
     display: flex;
     justify-content: center;
@@ -95,19 +161,19 @@ nav a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    border: 1px solid var(--glass-border);
+    color: var(--text-white);
     text-decoration: none;
     padding: 25px 35px;
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     font-weight: 600;
     font-size: 1.1rem;
     min-width: 200px;
     min-height: 80px;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-glass);
     position: relative;
     overflow: hidden;
     text-align: center;
@@ -127,12 +193,10 @@ nav a {
     }
 }
 
-/* Délais d'animation pour chaque lien */
 nav a:nth-child(1) { --delay: 1; }
 nav a:nth-child(2) { --delay: 2; }
 nav a:nth-child(3) { --delay: 3; }
 nav a:nth-child(4) { --delay: 4; }
-nav a:nth-child(5) { --delay: 5; }
 
 nav a::before {
     content: '';
@@ -160,73 +224,39 @@ nav a:hover {
 
 nav a:active {
     transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* Icônes pour chaque lien */
-nav a[href*="Accueil"]::after {
-    margin-left: 10px;
-    font-size: 1.3rem;
-    animation: bounce 2s ease-in-out infinite;
-}
-
-nav a[href*="Capteur"]::after {
-    margin-left: 10px;
-    font-size: 1.3rem;
-    animation: bounce 2s ease-in-out infinite 0.2s;
-}
-
-nav a[href*="Controler"]::after {
-    margin-left: 10px;
-    font-size: 1.3rem;
-    animation: bounce 2s ease-in-out infinite 0.4s;
-}
-
-nav a[href*="Affichage"]::after {
-    margin-left: 10px;
-    font-size: 1.3rem;
-    animation: bounce 2s ease-in-out infinite 0.6s;
-}
-
-nav a[href*="Connexion"]::after {
-    margin-left: 10px;
-    font-size: 1.3rem;
-    animation: bounce 2s ease-in-out infinite 0.8s;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-4px); }
-    60% { transform: translateY(-2px); }
-}
-
-/* Styles pour l'info utilisateur */
+/* ============= USER INFO ============= */
 .user-info {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--glass-border);
     padding: 20px 30px;
     margin: 0 auto 30px auto;
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     display: flex;
     justify-content: space-between;
     align-items: center;
     max-width: 800px;
     width: 90%;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-glass);
     animation: fadeIn 0.8s ease-out;
 }
 
+.spacing {
+    margin-bottom: 20px;
+}
+
 .welcome-message {
-    color: white;
+    color: var(--text-white);
     font-weight: 600;
     font-size: 1.1rem;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-shadow: var(--text-shadow);
 }
 
 .logout-btn {
     background: linear-gradient(45deg, #ff6b6b, #ff5252);
-    color: white;
+    color: var(--text-white);
     padding: 12px 24px;
     border: none;
     border-radius: 50px;
@@ -234,7 +264,7 @@ nav a[href*="Connexion"]::after {
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: var(--transition-smooth);
     box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
     position: relative;
     overflow: hidden;
@@ -261,26 +291,21 @@ nav a[href*="Connexion"]::after {
     background: linear-gradient(45deg, #ff5252, #ff4444);
 }
 
-.logout-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-}
-
 .guest-message {
     background: rgba(255, 193, 7, 0.15);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 193, 7, 0.3);
     padding: 20px 30px;
     margin: 0 auto 30px auto;
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     text-align: center;
     max-width: 800px;
     width: 90%;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-glass);
     animation: fadeIn 0.8s ease-out;
-    color: white;
+    color: var(--text-white);
     font-weight: 500;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-shadow: var(--text-shadow);
 }
 
 .login-link {
@@ -303,17 +328,96 @@ nav a[href*="Connexion"]::after {
     text-decoration: none;
 }
 
-/* Conteneur des données du capteur */
-.data-container, #table-container {
-    background: rgba(255, 255, 255, 0.1);
+/* ============= GRAPHIQUES ============= */
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    padding: 0 20px;
+    margin: 40px auto;
+    max-width: 1400px;
+    width: 100%;
+}
+
+.chart-wrapper {
+    background: var(--chart-bg);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--chart-border);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    box-shadow: var(--shadow-glass);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease-out;
+    transition: var(--transition-smooth);
+}
+
+.chart-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.chart-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.chart-wrapper h3 {
+    color: var(--text-white);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: var(--text-shadow);
+    position: relative;
+}
+
+.chart-wrapper h3::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(45deg, #48dbfb, #ff6b6b);
+    border-radius: 1px;
+}
+
+.chart-wrapper canvas {
+    width: 100% !important;
+    height: 300px !important;
+    border-radius: 10px;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============= TABLEAU ============= */
+#table-container {
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     padding: 30px;
     margin: 30px auto;
     width: 90%;
-    max-width: 800px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 900px;
+    box-shadow: var(--shadow-glass);
+    border: 1px solid var(--glass-border);
     animation: fadeIn 1s ease-out;
 }
 
@@ -322,97 +426,84 @@ nav a[href*="Connexion"]::after {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.data-container h2 {
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* Tableau des mesures */
 table {
     width: 100%;
     border-collapse: collapse;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     border-radius: 15px;
     overflow: hidden;
-    animation: fadeIn 1s ease-out;
+    animation: tableSlideIn 1s ease-out;
 }
 
 table.no-animation {
     animation: none;
 }
 
+@keyframes tableSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 caption {
-    font-size: 1.2em;
-    font-weight: bold;
-    padding: 15px;
-    color: white;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    font-size: 1.3em;
+    font-weight: 600;
+    padding: 20px;
+    color: var(--text-white);
+    text-shadow: var(--text-shadow);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 5px;
 }
 
 th, td {
     padding: 15px;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
 th {
     background: linear-gradient(45deg, rgba(102, 126, 234, 0.7), rgba(118, 75, 162, 0.7));
-    color: white;
+    color: var(--text-white);
     font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #48dbfb, #ff6b6b, #feca57);
 }
 
 td {
-    color: white;
+    color: var(--text-white);
     font-weight: 500;
+    font-size: 0.95rem;
 }
 
 tr:nth-child(even) {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
 }
 
 tr:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-/* Bouton Accueil */
-.home-button-container {
-    text-align: center;
-    margin: 20px 0;
-}
-
-.home-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    color: white;
-    text-decoration: none;
-    padding: 12px 25px;
-    border-radius: 50px;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: scale(1.01);
 }
 
-.home-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.home-icon {
-    margin-right: 8px;
-    font-size: 1.2rem;
-}
-
-/* Footer */
+/* ============= FOOTER ============= */
 footer {
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
@@ -435,7 +526,7 @@ footer::before {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
-/* Effet de particules flottantes */
+/* ============= ANIMATIONS & EFFETS ============= */
 body::before {
     content: '';
     position: fixed;
@@ -461,7 +552,18 @@ body::before {
     100% { transform: translateY(0px) translateX(0px); }
 }
 
-/* Responsive Design */
+/* ============= RESPONSIVE DESIGN ============= */
+@media (max-width: 1200px) {
+    .charts-container {
+        grid-template-columns: 1fr;
+        max-width: 800px;
+    }
+    
+    .chart-wrapper canvas {
+        height: 250px !important;
+    }
+}
+
 @media (max-width: 1024px) {
     nav {
         padding: 20px;
@@ -477,9 +579,15 @@ body::before {
         font-size: 2.5rem;
     }
     
-    .data-container, #table-container {
+    #table-container {
         padding: 20px;
         width: 95%;
+    }
+    
+    .charts-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 15px;
     }
 }
 
@@ -507,15 +615,31 @@ body::before {
         padding: 30px 20px;
     }
     
-    .data-container h2 {
-        font-size: 1.5rem;
+    .header-content {
+        flex-direction: column;
+        padding-top: 80px;
+    }
+    
+    .top-right-logo,
+    .company-name {
+        position: static;
+        margin: 10px 0;
+    }
+    
+    .logo-img {
+        height: 50px;
+    }
+    
+    .company-name {
+        font-size: 1.2em;
+        padding: 6px 15px;
     }
     
     th, td {
         padding: 12px 8px;
+        font-size: 0.9rem;
     }
 
-    /* Responsive pour les infos utilisateur */
     .user-info {
         flex-direction: column;
         gap: 15px;
@@ -536,6 +660,23 @@ body::before {
         padding: 15px 20px;
         font-size: 0.9rem;
     }
+    
+    .charts-container {
+        grid-template-columns: 1fr;
+        padding: 0 10px;
+    }
+    
+    .chart-wrapper {
+        padding: 20px;
+    }
+    
+    .chart-wrapper canvas {
+        height: 220px !important;
+    }
+    
+    .chart-wrapper h3 {
+        font-size: 1.1rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -549,28 +690,23 @@ body::before {
         font-size: 0.9rem;
     }
     
-    nav a::after {
-        font-size: 1.1rem;
-        margin-left: 8px;
-    }
-    
     footer {
         padding: 20px 15px;
         font-size: 0.8rem;
     }
     
-    .data-container, #table-container {
+    #table-container {
         padding: 15px;
     }
     
     caption {
-        padding: 10px;
-        font-size: 1rem;
+        padding: 15px;
+        font-size: 1.1rem;
     }
     
     th, td {
         padding: 10px 5px;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .user-info, .guest-message {
@@ -586,14 +722,37 @@ body::before {
         padding: 8px 16px;
         font-size: 0.8rem;
     }
+    
+    .chart-wrapper {
+        padding: 15px;
+    }
+    
+    .chart-wrapper canvas {
+        height: 200px !important;
+    }
+    
+    .chart-wrapper h3 {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
 }
 
-/* États actifs et focus */
+/* ============= ACCESSIBILITÉ ============= */
 nav a:focus {
     outline: none;
     box-shadow: 
         0 20px 50px rgba(0, 0, 0, 0.25),
-        0 0 0 3px rgba(255, 255, 255, 0.3);
+        0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.logout-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.5);
+}
+
+.login-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(254, 202, 87, 0.5);
 }
 
 /* Animation au survol du titre */
@@ -605,102 +764,22 @@ header h1:hover {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.02); }
 }
-.spacing {
-    margin-bottom: 20px;
+
+/* Amélioration des performances */
+.chart-wrapper,
+nav a,
+table,
+.user-info,
+.guest-message {
+    will-change: transform;
 }
 
-
-
-/* Conteneur principal du header */
-.header-content {
-    position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100px; /* Ajustez selon vos besoins */
-}
-
-/* Logo en haut à gauche */
-.top-right-logo {
-    position: absolute;
-    top: -30px;
-    left: -350px;
-    z-index: 10;
-}
-
-.logo-img {
-    height: 80px; /* Taille du logo */
-    width: auto;
-    transition: transform 0.3s ease;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
-}
-
-/* Nom de l'entreprise en haut à droite */
-.company-name {
-    position: absolute;
-    top: -30px;
-    right: -350px;
-    font-size: 1.5em;
-    font-weight: 700;
-    color: white;
-    text-shadow: 0 2px 10px rgba(252, 3, 3, 0.3);
-    background: rgba(233, 7, 7, 0.15);
-    backdrop-filter: blur(10px);
-    padding: 8px 20px;
-    border-radius: 50px;
-    border: 1px solid rgba(238, 5, 5, 0.2);
-    z-index: 10;
-}
-
-/* Titre principal centré */
-.header-content h1 {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 0 20px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .header-content {
-        flex-direction: column;
-        padding-top: 80px; /* Espace pour les éléments absolus */
-    }
-    
-    .top-right-logo,
-    .company-name {
-        position: static;
-        margin: 10px 0;
-    }
-    
-    .logo-img {
-        height: 40px;
-    }
-    
-    .company-name {
-        font-size: 1.2em;
-        padding: 6px 15px;
+/* Mode sombre préféré */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.08);
+        --glass-border: rgba(255, 255, 255, 0.15);
     }
 }
 
-@media (max-width: 480px) {
-    .header-content {
-        padding-top: 70px;
-    }
-    
-    .logo-img {
-        height: 30px;
-    }
-    
-    .company-name {
-        font-size: 1em;
-        padding: 5px 12px;
-    }
-    
-    .header-content h1 {
-        font-size: 1.8rem;
-    }
-}
+

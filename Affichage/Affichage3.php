@@ -1,44 +1,95 @@
 <?php
 // Paramètres de connexion à la base MySQL
-$host = 'localhost';
-$dbname = 'mesures_dht11';
-$user = 'arduino_user';
-$password = 'monpassword';
+$host = 'romantcham.fr';
+$dbname = 'Domotic_db';
+$user = 'G7E';
+$password = 'afyubr';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Modification : LIMIT 1 pour récupérer seulement la dernière mesure
-    $stmt = $pdo->query("SELECT * FROM mesures ORDER BY date_mesure DESC LIMIT 1");
+    // Récupération des dernières mesures pour chaque capteur
+    $stmt = $pdo->prepare("
+        SELECT 
+            c.nom as nom_capteur,
+            m.valeur,
+            m.date,
+            c.id as id_composant
+        FROM mesure m
+        INNER JOIN composant c ON m.id_composant = c.id
+        WHERE c.id IN (2, 6, 7) -- Luminosité (2), Température (6), Humidité (7)
+        AND m.date = (
+            SELECT MAX(m2.date) 
+            FROM mesure m2 
+            WHERE m2.id_composant = m.id_composant
+        )
+        ORDER BY c.id
+    ");
+    $stmt->execute();
     $mesures = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Organisation des données par type de capteur
+    $donnees = [];
+    foreach ($mesures as $mesure) {
+        $donnees[$mesure['id_composant']] = $mesure;
+    }
+    
 } catch (PDOException $e) {
     die("Erreur de connexion ou de requête : " . $e->getMessage());
 }
 
 // Fonction pour afficher le tableau HTML (réutilisable)
-function afficherTableau($mesures) {
+function afficherTableau($donnees) {
     ?>
     <table>
-        <caption>Dernière Mesure de Température et Humidité</caption>
+        <caption>Dernières Mesures des Capteurs</caption>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Température (°C)</th>
-                <th>Humidité (%)</th>
+                <th>Type de Capteur</th>
+                <th>Valeur</th>
+                <th>Unité</th>
                 <th>Date de la mesure</th>
             </tr>
         </thead>
         <tbody>
-            <?php if (!empty($mesures)): ?>
-                <?php foreach ($mesures as $mesure): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($mesure['id']) ?></td>
-                        <td><?= htmlspecialchars($mesure['temperature']) ?></td>
-                        <td><?= htmlspecialchars($mesure['humidite']) ?></td>
-                        <td><?= htmlspecialchars($mesure['date_mesure']) ?></td>
+            <?php if (!empty($donnees)): ?>
+                <?php 
+                // Affichage de la luminosité (id_composant = 2)
+                if (isset($donnees[2])): ?>
+                    <tr class="luminosite">
+                        <td>Luminosité</td>
+                        <td><?= htmlspecialchars($donnees[2]['valeur']) ?></td>
+                        <td>lux</td>
+                        <td><?= htmlspecialchars($donnees[2]['date']) ?></td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endif; ?>
+                
+                <?php 
+                // Affichage de la température (id_composant = 6)
+                if (isset($donnees[6])): ?>
+                    <tr class="temperature">
+                        <td> Température</td>
+                        <td><?= htmlspecialchars($donnees[6]['valeur']) ?></td>
+                        <td>°C</td>
+                        <td><?= htmlspecialchars($donnees[6]['date']) ?></td>
+                    </tr>
+                <?php endif; ?>
+                
+                <?php 
+                // Affichage de l'humidité (id_composant = 7)
+                if (isset($donnees[7])): ?>
+                    <tr class="humidite">
+                        <td> Humidité</td>
+                        <td><?= htmlspecialchars($donnees[7]['valeur']) ?></td>
+                        <td>%</td>
+                        <td><?= htmlspecialchars($donnees[7]['date']) ?></td>
+                    </tr>
+                <?php endif; ?>
+                
+                <?php if (empty($donnees)): ?>
+                    <tr><td colspan="4">Aucune donnée trouvée.</td></tr>
+                <?php endif; ?>
             <?php else: ?>
                 <tr><td colspan="4">Aucune donnée trouvée.</td></tr>
             <?php endif; ?>
@@ -53,7 +104,7 @@ $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
 
 if ($isAjax) {
     // Si c'est une requête AJAX, on renvoie juste le tableau
-    afficherTableau($mesures);
+    afficherTableau($donnees);
     exit; // on stoppe le script ici
 }
 ?>
@@ -62,20 +113,21 @@ if ($isAjax) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <title>Dernière mesure DHT11</title>
+    <title>Tempérium</title>
+    <link rel="icon" href="../logo/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="Affi.css">
+
 </head>
 <body>
 
     <div class="home-button-container">
         <a href="../Accueil/Accueil.php" class="home-button">
-            <span class="home-icon">🏠</span>
             Accueil
         </a>
     </div>
 
     <div id="table-container">
-        <?php afficherTableau($mesures); ?>
+        <?php afficherTableau($donnees); ?>
     </div>
 
     <script>
