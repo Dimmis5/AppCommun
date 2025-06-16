@@ -49,7 +49,13 @@ if ($isLoggedIn) {
     </nav>
 
     <?php if ($isLoggedIn): ?>
-        <!-- Conteneur des graphiques -->
+        <div class="sensor-control spacing">
+            <h2>Contrôle du Capteur DHT11</h2>
+            <button id="startSensorBtn" class="start-btn">Démarrer Capteur</button>
+            <button id="stopSensorBtn" class="stop-btn">Arrêter Capteur</button>
+            <div id="sensorStatus" class="sensor-status">Statut: Chargement...</div>
+        </div>
+
         <div class="charts-container">
             <div class="chart-wrapper">
                 <h3>Évolution de la Température (100 dernières mesures)</h3>
@@ -268,16 +274,80 @@ if ($isLoggedIn) {
                 }
             }
 
+            // --- Sensor Control Logic ---
+            const startSensorBtn = document.getElementById('startSensorBtn');
+            const stopSensorBtn = document.getElementById('stopSensorBtn');
+            const sensorStatusDiv = document.getElementById('sensorStatus');
+
+            async function updateSensorStatus() {
+                try {
+                    const response = await fetch('sensor_control.py', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=status'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        sensorStatusDiv.textContent = 'Statut: ' + (data.status === 'running' ? 'En cours d\'exécution' : 'Arrêté');
+                        sensorStatusDiv.className = 'sensor-status ' + (data.status === 'running' ? 'status-running' : 'status-stopped');
+                    } else {
+                        sensorStatusDiv.textContent = 'Statut: Erreur de vérification';
+                        sensorStatusDiv.className = 'sensor-status';
+
+                    }
+                } catch (error) {
+                    sensorStatusDiv.textContent = '';
+                    sensorStatusDiv.className = 'sensor-status';
+
+                }
+            }
+
+            async function controlSensor(action) {
+                const buttonToDisable = action === 'start' ? startSensorBtn : stopSensorBtn;
+                buttonToDisable.disabled = true;
+                sensorStatusDiv.textContent = 'Statut: Traitement...';
+                
+                try {
+                    const response = await fetch('sensor_control.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=' + action
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        alert(data.message);
+                    } else {
+                        alert('Erreur: ' + data.message);
+                    }
+                } catch (error) {
+                    alert('Erreur de connexion au serveur.');
+                } finally {
+                    buttonToDisable.disabled = false;
+                    updateSensorStatus(); 
+                }
+            }
+
+            startSensorBtn.addEventListener('click', () => controlSensor('start'));
+            stopSensorBtn.addEventListener('click', () => controlSensor('stop'));
+
             // Initialiser au chargement de la page
             document.addEventListener('DOMContentLoaded', function() {
                 initCharts();
                 chargerDonneesGraphiques();
+                updateSensorStatus(); // Initial sensor status check
                 
                 // Rafraîchir les graphiques toutes les 10 secondes
                 setInterval(chargerDonneesGraphiques, 2000);
                 
                 // Rafraîchir le tableau toutes les 2 secondes
                 setInterval(chargerTableau, 2000);
+
+                // Refresh sensor status every 5 seconds
+                setInterval(updateSensorStatus, 5000);
             });
         </script>
     <?php endif; ?>

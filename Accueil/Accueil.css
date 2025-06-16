@@ -783,3 +783,188 @@ table,
 }
 
 
+/* --- Boutons de Contrôle du Capteur --- */
+.sensor-control {
+    background: var(--glass-bg); /* Utilise le fond "verre" existant */
+    backdrop-filter: blur(20px); /* Ajoute le flou pour l'effet "verre" */
+    border: 1px solid var(--glass-border); /* Bordure "verre" */
+    padding: 25px 30px; /* Espacement intérieur */
+    margin: 30px auto; /* Centrage et marge */
+    border-radius: var(--border-radius); /* Bords arrondis comme les autres éléments */
+    box-shadow: var(--shadow-glass); /* Ombre de verre */
+    text-align: center;
+    max-width: 800px; /* Largeur maximale cohérente */
+    width: 90%; /* Prend 90% de la largeur disponible */
+    animation: fadeIn 0.8s ease-out; /* Animation d'apparition douce */
+    position: relative; /* Pour le pseudo-élément */
+    overflow: hidden; /* Pour l'effet de brillance */
+}
+
+/* Pseudo-élément pour la brillance ou un léger dégradé */
+.sensor-control::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px; /* Ligne fine en haut */
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.sensor-control h2 {
+    color: var(--text-white);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 25px; /* Marge sous le titre */
+    text-shadow: var(--text-shadow);
+    position: relative;
+}
+
+.sensor-control h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; /* Position sous le texte */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px; /* Largeur de la ligne */
+    height: 3px;
+    background: linear-gradient(45deg, #feca57, #ff6b6b); /* Dégradé de couleur */
+    border-radius: 2px;
+}
+
+.sensor-control button {
+    padding: 15px 30px; /* Taille de bouton confortable */
+    font-size: 1rem;
+    font-weight: 600; /* Texte en gras */
+    border: none;
+    border-radius: 50px; /* Boutons pill-shaped (en forme de pilule) */
+    cursor: pointer;
+    transition: var(--transition-smooth); /* Transition douce */
+    color: var(--text-white); /* Texte blanc */
+    margin: 0 15px; /* Espacement entre les boutons */
+    position: relative; /* Pour l'effet de brillance */
+    overflow: hidden; /* Pour l'effet de brillance */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre légère */
+}
+
+/* Effet de brillance au survol pour tous les boutons */
+.sensor-control button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.sensor-control button:hover::before {
+    left: 100%;
+}
+
+.sensor-control button:hover {
+    transform: translateY(-3px); /* Léger soulèvement au survol */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); /* Ombre plus prononcée */
+}
+
+/* Style spécifique pour le bouton Démarrer */
+.sensor-control button.start-btn {
+    background: linear-gradient(45deg, #28a745, #218838); /* Dégradé de vert */
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3); /* Ombre verte */
+}
+
+.sensor-control button.start-btn:hover {
+    background: linear-gradient(45deg, #218838, #1e7e34); /* Dégradé vert plus foncé au survol */
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+
+/* Style spécifique pour le bouton Arrêter */
+.sensor-control button.stop-btn {
+    background: linear-gradient(45deg, #dc3545, #c82333); /* Dégradé de rouge */
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3); /* Ombre rouge */
+}
+
+.sensor-control button.stop-btn:hover {
+    background: linear-gradient(45deg, #c82333, #bd2130); /* Dégradé rouge plus foncé au survol */
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+}
+
+/* Style pour l'état désactivé des boutons */
+.sensor-control button:disabled {
+    background: rgba(150, 150, 150, 0.5); /* Couleur grisée */
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    opacity: 0.7;
+}
+
+.sensor-control button:disabled::before {
+    display: none; /* Cache la brillance quand désactivé */
+}
+
+
+.sensor-status {
+    margin-top: 25px; /* Marge au-dessus du texte de statut */
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-shadow: var(--text-shadow);
+    color: var(--text-white); /* Couleur de base */
+}
+
+.sensor-status.status-running {
+    color: #4CAF50; /* Vert vif pour "En cours d'exécution" */
+}
+
+.sensor-status.status-stopped {
+    color: #f44336; /* Rouge vif pour "Arrêté" */
+}
+
+/* --- Responsive pour les boutons --- */
+@media (max-width: 768px) {
+    .sensor-control {
+        padding: 20px;
+    }
+    
+    .sensor-control h2 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+    }
+    
+    .sensor-control button {
+        padding: 12px 25px;
+        font-size: 0.95rem;
+        margin: 0 10px;
+        min-width: 120px; /* Ajuste la largeur minimale */
+    }
+    
+    .sensor-status {
+        font-size: 1rem;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sensor-control {
+        padding: 15px;
+        width: 95%;
+    }
+    
+    .sensor-control h2 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+    
+    .sensor-control button {
+        display: block; /* Empile les boutons */
+        width: calc(100% - 20px); /* Prend presque toute la largeur */
+        margin: 10px auto; /* Centre et ajoute des marges verticales */
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .sensor-status {
+        font-size: 0.9rem;
+        margin-top: 15px;
+    }
+}
