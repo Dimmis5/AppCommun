@@ -56,6 +56,40 @@ if ($isLoggedIn) {
             <div id="sensorStatus" class="sensor-status">Statut: Chargement...</div>
         </div>
 
+        <!-- Nouvelle section pour le contrôle automatique des volets -->
+        <div class="shutter-control spacing">
+            <h2>Contrôle Automatique des Volets</h2>
+            <div class="shutter-info">
+                <div class="temperature-display">
+                    <span class="temp-label">Température actuelle:</span>
+                    <span id="currentTemp" class="temp-value">--°C</span>
+                </div>
+                <div class="shutter-status-container">
+                    <div class="shutter-visual">
+                        <div id="shutterAnimation" class="shutter-animation">
+                            <div class="shutter-slat"></div>
+                            <div class="shutter-slat"></div>
+                            <div class="shutter-slat"></div>
+                            <div class="shutter-slat"></div>
+                            <div class="shutter-slat"></div>
+                        </div>
+                    </div>
+                    <div class="shutter-status-text">
+                        <span class="status-label">État des volets:</span>
+                        <span id="shutterStatus" class="status-value">En attente...</span>
+                    </div>
+                </div>
+                <div class="shutter-rules">
+                    <div class="rule-item">
+                        <span class="rule-text">T° ≥ 28°C → Fermeture automatique (3s)</span>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-text">T° ≤ 27°C → Ouverture automatique (3s)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="charts-container">
             <div class="chart-wrapper">
                 <h3>Évolution de la Température (100 dernières mesures)</h3>
@@ -120,6 +154,8 @@ if ($isLoggedIn) {
             let isInitialLoad = true;
             let temperatureChart = null;
             let humidityChart = null;
+            let currentShutterState = 'unknown'; // 'open', 'closed', 'opening', 'closing', 'unknown'
+            let lastTemperature = null;
 
             // Configuration des graphiques
             const chartConfig = {
@@ -169,6 +205,61 @@ if ($isLoggedIn) {
                     }
                 }
             };
+
+            // Fonctions pour le contrôle des volets
+            function updateShutterStatus(temperature) {
+                const currentTempElement = document.getElementById('currentTemp');
+                const shutterStatusElement = document.getElementById('shutterStatus');
+                const shutterAnimation = document.getElementById('shutterAnimation');
+                
+                // Mettre à jour la température affichée
+                currentTempElement.textContent = temperature + '°C';
+                currentTempElement.className = 'temp-value';
+                
+                if (temperature >= 28) {
+                    currentTempElement.classList.add('temp-hot');
+                } else if (temperature <= 27) {
+                    currentTempElement.classList.add('temp-cold');
+                } else {
+                    currentTempElement.classList.add('temp-normal');
+                }
+
+                // Logique de contrôle des volets
+                if ((temperature >= 28 && currentShutterState !== 'closed' && currentShutterState !== 'closing') ||
+                    (temperature <= 27 && currentShutterState !== 'open' && currentShutterState !== 'opening')) {
+                    
+                    if (temperature >= 28) {
+                        // Fermer les volets
+                        currentShutterState = 'closing';
+                        shutterStatusElement.textContent = 'Fermeture en cours...';
+                        shutterStatusElement.className = 'status-value status-closing';
+                        shutterAnimation.className = 'shutter-animation closing';
+                        
+                        setTimeout(() => {
+                            currentShutterState = 'closed';
+                            shutterStatusElement.textContent = 'Fermés';
+                            shutterStatusElement.className = 'status-value status-closed';
+                            shutterAnimation.className = 'shutter-animation closed';
+                        }, 3000);
+                        
+                    } else if (temperature <= 27) {
+                        // Ouvrir les volets
+                        currentShutterState = 'opening';
+                        shutterStatusElement.textContent = 'Ouverture en cours...';
+                        shutterStatusElement.className = 'status-value status-opening';
+                        shutterAnimation.className = 'shutter-animation opening';
+                        
+                        setTimeout(() => {
+                            currentShutterState = 'open';
+                            shutterStatusElement.textContent = 'Ouverts';
+                            shutterStatusElement.className = 'status-value status-open';
+                            shutterAnimation.className = 'shutter-animation open';
+                        }, 3000);
+                    }
+                }
+                
+                lastTemperature = temperature;
+            }
 
             // Initialiser les graphiques
             function initCharts() {
@@ -235,6 +326,12 @@ if ($isLoggedIn) {
                         humidityChart.data.labels = labels;
                         humidityChart.data.datasets[0].data = humidites;
                         humidityChart.update('none');
+                        
+                        // Mettre à jour le contrôle des volets avec la dernière température
+                        if (temperatures.length > 0) {
+                            const latestTemp = temperatures[temperatures.length - 1];
+                            updateShutterStatus(latestTemp);
+                        }
                     }
                 } catch (e) {
                     console.error('Erreur lors du chargement des données graphiques:', e);
