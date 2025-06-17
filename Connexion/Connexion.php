@@ -20,23 +20,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         $messageType = 'error';
     } else {
         try {
-            // Connexion à la base de données
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
-            // Requête pour récupérer l'utilisateur
             $stmt = $pdo->prepare("SELECT id, prenom, nom, mot_de_passe FROM utilisateur WHERE adresse_mail = ?");
             $stmt->execute([$email]);
             $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($utilisateur && hash('sha256', $motDePasse) === $utilisateur['mot_de_passe']) {
-                // Connexion réussie
                 $_SESSION['user_id'] = $utilisateur['id'];
                 $_SESSION['user_prenom'] = $utilisateur['prenom'];
                 $_SESSION['user_nom'] = $utilisateur['nom'];
                 $_SESSION['user_email'] = $email;
                 
-                // Redirection vers la page d'accueil ou tableau de bord
                 header('Location: ../Accueil/Accueil.php');
                 exit();
             } else {
@@ -46,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         } catch (PDOException $e) {
             $message = 'Erreur de connexion à la base de données.';
             $messageType = 'error';
-            // En développement, vous pouvez afficher l'erreur : $e->getMessage()
         }
     }
 }
@@ -73,8 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         try {
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-            // Vérifier si l'email existe déjà
+
             $stmt = $pdo->prepare("SELECT id FROM utilisateur WHERE adresse_mail = ?");
             $stmt->execute([$email]);
             
@@ -82,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 $message = 'Cette adresse e-mail est déjà utilisée.';
                 $messageType = 'error';
             } else {
-                // Insérer le nouvel utilisateur
                 $hashedPassword = hash('sha256', $motDePasse);
                 $stmt = $pdo->prepare("INSERT INTO utilisateur (prenom, nom, adresse_mail, numero_telephone, mot_de_passe) VALUES (?, ?, ?, ?, ?)");
                 $stmt->execute([$prenom, $nom, $email, $telephone ?: null, $hashedPassword]);
@@ -122,7 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 </div>
             <?php endif; ?>
 
-            <!-- Formulaire de connexion -->
             <div id="login-form" class="form-section active">
                 <form method="POST">
                     <div class="form-group">
@@ -137,7 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 </form>
             </div>
 
-            <!-- Formulaire d'inscription -->
             <div id="register-form" class="form-section">
                 <form method="POST">
                     <div class="row">
@@ -174,22 +165,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 
     <script>
         function switchTab(tab) {
-            // Masquer tous les formulaires
             document.querySelectorAll('.form-section').forEach(section => {
                 section.classList.remove('active');
             });
             
-            // Désactiver tous les onglets
             document.querySelectorAll('.tab').forEach(tabElement => {
                 tabElement.classList.remove('active');
             });
-            
-            // Activer l'onglet et le formulaire sélectionnés
+
             event.target.classList.add('active');
             document.getElementById(tab + '-form').classList.add('active');
         }
 
-        // Animation des labels
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('blur', function() {
                 if (this.value !== '') {
