@@ -1418,3 +1418,127 @@ table,
         font-size: 0.9rem;
     }
 }
+
+
+/* --- Météo Extérieure --- */
+.weather-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    padding: 25px;
+    margin: 30px auto;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-glass);
+    max-width: 800px;
+    width: 90%;
+    text-align: center;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.weather-container h2 {
+    color: var(--text-white);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-shadow: var(--text-shadow);
+    position: relative;
+}
+
+.weather-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(45deg, #48dbfb, #ff6b6b);
+    border-radius: 2px;
+}
+
+.weather-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.weather-icon img {
+    width: 100px;
+    height: 100px;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+}
+
+.weather-details {
+    text-align: left;
+}
+
+.weather-temp {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-white);
+    margin-bottom: 5px;
+    text-shadow: var(--text-shadow);
+}
+
+.weather-temp span {
+    font-size: 3rem;
+}
+
+.weather-desc {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+
+.weather-humidity {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.weather-update-time {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 15px;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .weather-info {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .weather-details {
+        text-align: center;
+    }
+    
+    .weather-temp {
+        font-size: 2rem;
+    }
+    
+    .weather-temp span {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .weather-container {
+        padding: 20px;
+    }
+    
+    .weather-icon img {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .weather-temp {
+        font-size: 1.8rem;
+    }
+    
+    .weather-temp span {
+        font-size: 2.2rem;
+    }
+}

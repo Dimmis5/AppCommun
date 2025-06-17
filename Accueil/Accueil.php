@@ -49,6 +49,26 @@ if ($isLoggedIn) {
     </nav>
 
     <?php if ($isLoggedIn): ?>
+        <!-- Section Météo Extérieure -->
+        <div class="weather-container spacing">
+            <h2>Météo à Paris</h2>
+            <div class="weather-info">
+                <div class="weather-icon">
+                    <img id="weatherIcon" src="https://openweathermap.org/img/wn/01d@2x.png" alt="Weather Icon">
+                </div>
+                <div class="weather-details">
+                    <div class="weather-temp">
+                        <span id="currentOutdoorTemp">--</span>°C
+                    </div>
+                    <div class="weather-desc" id="weatherDescription">Chargement...</div>
+                    <div class="weather-humidity">
+                        Humidité: <span id="outdoorHumidity">--</span>%
+                    </div>
+                </div>
+            </div>
+            <div class="weather-update-time" id="weatherUpdateTime"></div>
+        </div>
+
         <div class="sensor-control spacing">
             <h2>Contrôle du Capteur DHT11</h2>
             <button id="startSensorBtn" class="start-btn">Démarrer Capteur</button>
@@ -85,9 +105,11 @@ if ($isLoggedIn) {
                 </div>
                 <div class="shutter-rules">
                     <div class="rule-item">
+                        <span class="rule-icon">🔥</span>
                         <span class="rule-text">T° ≥ 28°C → Fermeture automatique (3s)</span>
                     </div>
                     <div class="rule-item">
+                        <span class="rule-icon">❄️</span>
                         <span class="rule-text">T° ≤ 27°C → Ouverture automatique (3s)</span>
                     </div>
                 </div>
@@ -210,6 +232,42 @@ if ($isLoggedIn) {
                     }
                 }
             };
+
+            // Fonction pour récupérer la météo de Paris
+            async function fetchParisWeather() {
+                const apiKey = '5bef5060626236b534090487e06d21d0'; 
+                const city = 'Paris,FR';
+                const lang = 'fr';
+                const units = 'metric';
+                
+                try {
+                    const response = await fetch(
+                        `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=${units}&lang=${lang}&appid=${apiKey}`
+                    );
+                    
+                    if (!response.ok) throw new Error('Erreur réseau');
+                    
+                    const data = await response.json();
+                    
+                    // Mettre à jour l'interface
+                    document.getElementById('currentOutdoorTemp').textContent = Math.round(data.main.temp);
+                    document.getElementById('weatherDescription').textContent = data.weather[0].description;
+                    document.getElementById('outdoorHumidity').textContent = data.main.humidity;
+                    
+                    // Mettre à jour l'icône météo
+                    const iconCode = data.weather[0].icon;
+                    document.getElementById('weatherIcon').src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                    
+                    // Afficher l'heure de mise à jour
+                    const now = new Date();
+                    document.getElementById('weatherUpdateTime').textContent = 
+                        `Dernière mise à jour: ${now.toLocaleTimeString('fr-FR')}`;
+                    
+                } catch (error) {
+                    console.error('Erreur lors de la récupération de la météo:', error);
+                    document.getElementById('weatherDescription').textContent = 'Impossible de charger les données météo';
+                }
+            }
 
             // Fonctions pour le contrôle des volets
             function updateShutterStatus(temperature) {
@@ -481,10 +539,12 @@ if ($isLoggedIn) {
                 initCharts();
                 chargerDonneesGraphiques();
                 updateSensorStatus();
+                fetchParisWeather(); // Charger la météo au démarrage
                 
                 setInterval(chargerDonneesGraphiques, 2000);
                 setInterval(chargerTableau, 2000);
                 setInterval(updateSensorStatus, 5000);
+                setInterval(fetchParisWeather, 30 * 60 * 1000); // Actualiser la météo toutes les 30 minutes
             });
         </script>
     <?php endif; ?>
