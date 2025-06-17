@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Vérifier si l'utilisateur est connecté
+// Regarder si l'utilisateur est connecté
 $isLoggedIn = isset($_SESSION['user_id']);
 $userName = '';
 if ($isLoggedIn) {
@@ -49,7 +49,7 @@ if ($isLoggedIn) {
     </nav>
 
     <?php if ($isLoggedIn): ?>
-        <!-- Section Météo Extérieure -->
+        <!-- Front pour la météo -->
         <div class="weather-container spacing">
             <h2>Météo à Paris</h2>
             <div class="weather-info">
@@ -68,7 +68,7 @@ if ($isLoggedIn) {
             </div>
             <div class="weather-update-time" id="weatherUpdateTime"></div>
         </div>
-
+        <!-- Front pour démarre/arreter le capteur -->
         <div class="sensor-control spacing">
             <h2>Contrôle du Capteur DHT11</h2>
             <button id="startSensorBtn" class="start-btn">Démarrer Capteur</button>
@@ -76,7 +76,7 @@ if ($isLoggedIn) {
             <div id="sensorStatus" class="sensor-status">Statut: Chargement...</div>
         </div>
 
-        <!-- Section pour le contrôle des volets -->
+        <!-- Front pour voir l'état du volet -->
         <div class="shutter-control spacing">
             <h2>Contrôle des Volets</h2>
             <div class="shutter-info">
@@ -105,11 +105,9 @@ if ($isLoggedIn) {
                 </div>
                 <div class="shutter-rules">
                     <div class="rule-item">
-                        <span class="rule-icon">🔥</span>
                         <span class="rule-text">T° ≥ 28°C → Fermeture automatique (3s)</span>
                     </div>
                     <div class="rule-item">
-                        <span class="rule-icon">❄️</span>
                         <span class="rule-text">T° ≤ 27°C → Ouverture automatique (3s)</span>
                     </div>
                 </div>
@@ -233,7 +231,7 @@ if ($isLoggedIn) {
                 }
             };
 
-            // Fonction pour récupérer la météo de Paris
+            // Météo Paris extérieur
             async function fetchParisWeather() {
                 const apiKey = '5bef5060626236b534090487e06d21d0'; 
                 const city = 'Paris,FR';
