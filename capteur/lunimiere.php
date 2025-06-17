@@ -54,6 +54,7 @@ try {
             <a href="../Accueil/Accueil.php" class="home-button">
                 Accueil
             </a>
+            <a href ="../Affichage/Affichage3.php" class ="home-button"> Retour </a>
         </div>
 
         <div class="current-value">
