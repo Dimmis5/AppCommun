@@ -1,7 +1,6 @@
-/* Import Google Fonts */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Variables CSS pour une meilleure maintenance */
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     --glass-bg: rgba(255, 255, 255, 0.1);
@@ -39,7 +38,6 @@ body {
     50% { background-position: 100% 50%; }
 }
 
-/* Animation des particules flottantes */
 body::before {
     content: '';
     position: fixed;
@@ -290,7 +288,7 @@ td:nth-child(4) {
 }
 
 .servo td:nth-child(2) {
-    color: var(--text-white);
+    color: var(000000);
     position: relative;
 }
 
@@ -306,14 +304,12 @@ td:nth-child(4) {
     animation: pulse 2s ease-in-out infinite;
 }
 
-/* Indicateur visuel pour le statut du servo */
 .servo td:nth-child(3) {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-/* Animation pour l'état actif */
 .servo:has(td:nth-child(2):contains("1")) td:nth-child(2)::before {
     background-color: var(--servo-active);
     box-shadow: 0 0 10px var(--servo-active);
@@ -324,7 +320,6 @@ td:nth-child(4) {
     text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
 }
 
-/* Animation pour l'état inactif */
 .servo:has(td:nth-child(2):contains("0")) td:nth-child(2)::before {
     background-color: var(--servo-inactive);
     box-shadow: 0 0 10px var(--servo-inactive);
@@ -335,7 +330,6 @@ td:nth-child(4) {
     text-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
 }
 
-/* Fallback pour les navigateurs qui ne supportent pas :has() */
 .servo td:nth-child(3):contains("Activé") {
     color: var(--servo-active);
     text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
@@ -546,7 +540,6 @@ td[colspan="4"] {
     }
 }
 
-/* Mode sombre préféré */
 @media (prefers-color-scheme: dark) {
     :root {
         --glass-bg: rgba(255, 255, 255, 0.08);

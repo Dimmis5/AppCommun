@@ -39,7 +39,6 @@ try {
     die("Erreur de connexion ou de requête : " . $e->getMessage());
 }
 
-// Fonction pour afficher le tableau HTML (réutilisable)
 function afficherTableau($donnees) {
     ?>
     <table>
@@ -114,9 +113,8 @@ $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
 if ($isAjax) {
-    // Si c'est une requête AJAX, on renvoie juste le tableau
     afficherTableau($donnees);
-    exit; // on stoppe le script ici
+    exit; 
 }
 ?>
 
@@ -155,11 +153,9 @@ if ($isAjax) {
                 const container = document.getElementById('table-container');
                 
                 if (isInitialLoad) {
-                    // Premier chargement : animation normale
                     container.innerHTML = html;
                     isInitialLoad = false;
                 } else {
-                    // Mises à jour suivantes : transition fluide sans repop
                     const newTable = document.createElement('div');
                     newTable.innerHTML = html;
                     const newTableElement = newTable.querySelector('table');
@@ -177,10 +173,8 @@ if ($isAjax) {
             }
         }
 
-        // Chargement initial
         chargerTableau();
 
-        // Rafraîchir toutes les 2 secondes
         setInterval(chargerTableau, 2000);
     </script>
 
