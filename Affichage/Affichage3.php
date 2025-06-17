@@ -68,7 +68,7 @@ function afficherTableau($donnees) {
                 // Affichage de la luminosité (id_composant = 2)
                 if (isset($donnees[2])): ?>
                     <tr class="luminosite">
-                        <td>Luminosité</td>
+                        <td><a href="../capteur/lunimiere.php" style="color: inherit; text-decoration: none;">Luminosité</a></td>
                         <td><?= htmlspecialchars($donnees[2]['valeur']) ?></td>
                         <td>lux</td>
                         <td><?= htmlspecialchars($donnees[2]['date']) ?></td>
