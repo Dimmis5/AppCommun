@@ -27,7 +27,6 @@ class SensorManager:
         self.humidite = None
         self.temperature = None
         
-        # Gestionnaire de signal pour arrêt propre
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
     
@@ -57,7 +56,7 @@ class SensorManager:
         """Connexion au port série"""
         try:
             self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
-            time.sleep(2)  # Attendre la stabilisation de la connexion
+            time.sleep(2) 
             logging.info("Connexion série établie")
             return True
         except serial.SerialException as e:
@@ -77,8 +76,7 @@ class SensorManager:
                 if match:
                     self.temperature = float(match.group(1))
                     logging.debug(f"Température reçue: {self.temperature}°C")
-                    
-                    # Insérer en base dès qu'on a les deux valeurs
+
                     if self.humidite is not None:
                         self.insert_data()
                         
@@ -91,14 +89,12 @@ class SensorManager:
             sql = "INSERT INTO mesures (temperature, humidite) VALUES (%s, %s)"
             self.cursor.execute(sql, (self.temperature, self.humidite))
             logging.info(f"Données insérées: T={self.temperature}°C, H={self.humidite}%")
-            
-            # Réinitialiser les valeurs
+
             self.humidite = None
             self.temperature = None
             
         except mysql.connector.Error as e:
             logging.error(f"Erreur lors de l'insertion: {e}")
-            # Tentative de reconnexion
             self.reconnect_database()
     
     def reconnect_database(self):
@@ -114,8 +110,7 @@ class SensorManager:
     def run(self):
         """Boucle principale du capteur"""
         logging.info("Démarrage du gestionnaire de capteur...")
-        
-        # Établir les connexions
+
         if not self.connect_database():
             logging.error("Impossible de se connecter à la base de données")
             return False
@@ -135,14 +130,14 @@ class SensorManager:
                             logging.debug(f"Données reçues: {line}")
                             self.parse_sensor_data(line)
                     
-                    time.sleep(0.1)  # Petite pause pour éviter la surcharge CPU
+                    time.sleep(0.1)
                     
                 except serial.SerialException as e:
                     logging.error(f"Erreur série: {e}")
                     break
                 except Exception as e:
                     logging.error(f"Erreur inattendue: {e}")
-                    time.sleep(1)  # Pause avant de continuer
+                    time.sleep(1) 
                     
         except Exception as e:
             logging.error(f"Erreur dans la boucle principale: {e}")

@@ -21,16 +21,10 @@ try:
         if line:
             print(f"Données reçues : {line}")
 
-            # Exemple de parsing selon ton format affiché :
-            # "Humidité    : 35 %"
-            # "Température : 27.5 °C"
             if "Humidité" in line:
                 humidite = int(re.search(r'(\d+)', line).group(1))
             elif "Température" in line:
                 temperature = float(re.search(r'([\d.]+)', line).group(1))
-
-                # Dès qu'on a les 2 valeurs, insérer dans la base
-                # (ici, on suppose que humidite et temperature sont bien définis)
                 sql = "INSERT INTO mesures (temperature, humidite) VALUES (%s, %s)"
                 cursor.execute(sql, (temperature, humidite))
                 db.commit()
