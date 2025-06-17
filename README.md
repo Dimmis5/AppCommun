@@ -21,7 +21,7 @@ Nous avons choisi le cas d’usage **gestion domotique**. Notre scénario automa
 | Capteur de luminosité     | Mesure l’intensité lumineuse ambiante                                 |
 | Capteur de température    | Fournit la température extérieure                                     |
 | Capteur de fin de course  | Détecte la fermeture complète du rideau                               |
-| Microcontrôleur (ex: TIVA) | Interface entre les capteurs/actionneurs et l’ordinateur              |
+| Microcontrôleur (TIVA) | Interface entre les capteurs/actionneurs et l’ordinateur              |
 
 ## 🖥️ Partie Informatique
 
