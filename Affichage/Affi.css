@@ -13,6 +13,8 @@
     --border-radius: 20px;
     --chart-bg: rgba(255, 255, 255, 0.08);
     --chart-border: rgba(255, 255, 255, 0.15);
+    --servo-active: #4CAF50;
+    --servo-inactive: #f44336;
 }
 
 * {
@@ -134,9 +136,7 @@ caption {
     text-shadow: var(--text-shadow);
     letter-spacing: -0.5px;
     position: relative;
-
 }
-
 
 @keyframes titleSlideIn {
     from {
@@ -280,6 +280,70 @@ td:nth-child(4) {
     color: #ff9ff3;
     font-size: 1rem;
     font-weight: 400;
+}
+
+/* Styles spécifiques pour le servo */
+.servo td:nth-child(3) {
+    font-weight: 700;
+    font-size: 1.2rem;
+    position: relative;
+}
+
+.servo td:nth-child(2) {
+    color: var(--text-white);
+    position: relative;
+}
+
+.servo td:nth-child(2)::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Indicateur visuel pour le statut du servo */
+.servo td:nth-child(3) {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Animation pour l'état actif */
+.servo:has(td:nth-child(2):contains("1")) td:nth-child(2)::before {
+    background-color: var(--servo-active);
+    box-shadow: 0 0 10px var(--servo-active);
+}
+
+.servo:has(td:nth-child(2):contains("1")) td:nth-child(3) {
+    color: var(--servo-active);
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+/* Animation pour l'état inactif */
+.servo:has(td:nth-child(2):contains("0")) td:nth-child(2)::before {
+    background-color: var(--servo-inactive);
+    box-shadow: 0 0 10px var(--servo-inactive);
+}
+
+.servo:has(td:nth-child(2):contains("0")) td:nth-child(3) {
+    color: var(--servo-inactive);
+    text-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+}
+
+/* Fallback pour les navigateurs qui ne supportent pas :has() */
+.servo td:nth-child(3):contains("Activé") {
+    color: var(--servo-active);
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.servo td:nth-child(3):contains("Désactivé") {
+    color: var(--servo-inactive);
+    text-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
 }
 
 /* Message d'erreur */
@@ -489,4 +553,3 @@ td[colspan="4"] {
         --glass-border: rgba(255, 255, 255, 0.15);
     }
 }
-

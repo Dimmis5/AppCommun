@@ -9,7 +9,7 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Récupération des dernières mesures pour chaque capteur
+    // Récupération des dernières mesures pour chaque capteur + servo
     $stmt = $pdo->prepare("
         SELECT 
             c.nom as nom_capteur,
@@ -18,7 +18,7 @@ try {
             c.id as id_composant
         FROM mesure m
         INNER JOIN composant c ON m.id_composant = c.id
-        WHERE c.id IN (2, 6, 7) -- Luminosité (2), Température (6), Humidité (7)
+        WHERE c.id IN (1, 2, 6, 7) -- Servo (1), Luminosité (2), Température (6), Humidité (7)
         AND m.date = (
             SELECT MAX(m2.date) 
             FROM mesure m2 
@@ -55,6 +55,17 @@ function afficherTableau($donnees) {
         <tbody>
             <?php if (!empty($donnees)): ?>
                 <?php 
+                // Affichage du servo (id_composant = 1)
+                if (isset($donnees[1])): ?>
+                    <tr class="servo">
+                        <td>Servo</td>
+                        <td><?= htmlspecialchars($donnees[1]['valeur']) ?></td>
+                        <td><?= $donnees[1]['valeur'] == 1 ? 'Activé' : 'Désactivé' ?></td>
+                        <td><?= htmlspecialchars($donnees[1]['date']) ?></td>
+                    </tr>
+                <?php endif; ?>
+                
+                <?php 
                 // Affichage de la luminosité (id_composant = 2)
                 if (isset($donnees[2])): ?>
                     <tr class="luminosite">
@@ -69,7 +80,7 @@ function afficherTableau($donnees) {
                 // Affichage de la température (id_composant = 6)
                 if (isset($donnees[6])): ?>
                     <tr class="temperature">
-                        <td> Température</td>
+                        <td>Température</td>
                         <td><?= htmlspecialchars($donnees[6]['valeur']) ?></td>
                         <td>°C</td>
                         <td><?= htmlspecialchars($donnees[6]['date']) ?></td>
@@ -80,7 +91,7 @@ function afficherTableau($donnees) {
                 // Affichage de l'humidité (id_composant = 7)
                 if (isset($donnees[7])): ?>
                     <tr class="humidite">
-                        <td> Humidité</td>
+                        <td>Humidité</td>
                         <td><?= htmlspecialchars($donnees[7]['valeur']) ?></td>
                         <td>%</td>
                         <td><?= htmlspecialchars($donnees[7]['date']) ?></td>
