@@ -45,7 +45,7 @@ if ($isLoggedIn) {
 
     <nav>
         <a href="Accueil.php">Accueil</a>
-        <a href="<?php echo $isLoggedIn ? '../Affichage/Affichage3.php' : '../Connexion/Connexion.php'; ?>">Donnée capteur & Actionneurs </a>
+        <a href="<?php echo $isLoggedIn ? '../Affichage/Affichage3.php' : '../Connexion/Connexion.php'; ?>">Donnée capteur & Actionneurs</a>
     </nav>
 
     <?php if ($isLoggedIn): ?>
@@ -56,9 +56,9 @@ if ($isLoggedIn) {
             <div id="sensorStatus" class="sensor-status">Statut: Chargement...</div>
         </div>
 
-        <!-- Nouvelle section pour le contrôle automatique des volets -->
+        <!-- Section pour le contrôle des volets -->
         <div class="shutter-control spacing">
-            <h2>Contrôle Automatique des Volets</h2>
+            <h2>Contrôle des Volets</h2>
             <div class="shutter-info">
                 <div class="temperature-display">
                     <span class="temp-label">Température actuelle:</span>
@@ -78,6 +78,10 @@ if ($isLoggedIn) {
                         <span class="status-label">État des volets:</span>
                         <span id="shutterStatus" class="status-value">En attente...</span>
                     </div>
+                </div>
+                <div class="manual-control">
+                    <button id="openShuttersBtn" class="control-btn open-btn">Ouvrir Manuellement</button>
+                    <button id="closeShuttersBtn" class="control-btn close-btn">Fermer Manuellement</button>
                 </div>
                 <div class="shutter-rules">
                     <div class="rule-item">
@@ -154,8 +158,9 @@ if ($isLoggedIn) {
             let isInitialLoad = true;
             let temperatureChart = null;
             let humidityChart = null;
-            let currentShutterState = 'unknown'; // 'open', 'closed', 'opening', 'closing', 'unknown'
+            let currentShutterState = 'unknown';
             let lastTemperature = null;
+            let isManualOverride = false;
 
             // Configuration des graphiques
             const chartConfig = {
@@ -208,11 +213,12 @@ if ($isLoggedIn) {
 
             // Fonctions pour le contrôle des volets
             function updateShutterStatus(temperature) {
+                if (isManualOverride) return;
+                
                 const currentTempElement = document.getElementById('currentTemp');
                 const shutterStatusElement = document.getElementById('shutterStatus');
                 const shutterAnimation = document.getElementById('shutterAnimation');
                 
-                // Mettre à jour la température affichée
                 currentTempElement.textContent = temperature + '°C';
                 currentTempElement.className = 'temp-value';
                 
@@ -224,12 +230,10 @@ if ($isLoggedIn) {
                     currentTempElement.classList.add('temp-normal');
                 }
 
-                // Logique de contrôle des volets
                 if ((temperature >= 28 && currentShutterState !== 'closed' && currentShutterState !== 'closing') ||
                     (temperature <= 27 && currentShutterState !== 'open' && currentShutterState !== 'opening')) {
                     
                     if (temperature >= 28) {
-                        // Fermer les volets
                         currentShutterState = 'closing';
                         shutterStatusElement.textContent = 'Fermeture en cours...';
                         shutterStatusElement.className = 'status-value status-closing';
@@ -237,13 +241,12 @@ if ($isLoggedIn) {
                         
                         setTimeout(() => {
                             currentShutterState = 'closed';
-                            shutterStatusElement.textContent = 'Fermés';
+                            shutterStatusElement.textContent = 'Fermés (auto)';
                             shutterStatusElement.className = 'status-value status-closed';
                             shutterAnimation.className = 'shutter-animation closed';
                         }, 3000);
                         
                     } else if (temperature <= 27) {
-                        // Ouvrir les volets
                         currentShutterState = 'opening';
                         shutterStatusElement.textContent = 'Ouverture en cours...';
                         shutterStatusElement.className = 'status-value status-opening';
@@ -251,7 +254,7 @@ if ($isLoggedIn) {
                         
                         setTimeout(() => {
                             currentShutterState = 'open';
-                            shutterStatusElement.textContent = 'Ouverts';
+                            shutterStatusElement.textContent = 'Ouverts (auto)';
                             shutterStatusElement.className = 'status-value status-open';
                             shutterAnimation.className = 'shutter-animation open';
                         }, 3000);
@@ -260,6 +263,54 @@ if ($isLoggedIn) {
                 
                 lastTemperature = temperature;
             }
+
+            // Contrôle manuel des volets
+            const openShuttersBtn = document.getElementById('openShuttersBtn');
+            const closeShuttersBtn = document.getElementById('closeShuttersBtn');
+
+            function manualShutterControl(action) {
+                const shutterStatusElement = document.getElementById('shutterStatus');
+                const shutterAnimation = document.getElementById('shutterAnimation');
+                
+                openShuttersBtn.disabled = true;
+                closeShuttersBtn.disabled = true;
+                isManualOverride = true;
+                
+                if (action === 'open') {
+                    currentShutterState = 'opening';
+                    shutterStatusElement.textContent = 'Ouverture manuelle...';
+                    shutterStatusElement.className = 'status-value status-opening';
+                    shutterAnimation.className = 'shutter-animation opening';
+                    
+                    setTimeout(() => {
+                        currentShutterState = 'open';
+                        shutterStatusElement.textContent = 'Ouverts (manuel)';
+                        shutterStatusElement.className = 'status-value status-open';
+                        shutterAnimation.className = 'shutter-animation open';
+                        openShuttersBtn.disabled = false;
+                        closeShuttersBtn.disabled = false;
+                        setTimeout(() => isManualOverride = false, 10000);
+                    }, 3000);
+                } else {
+                    currentShutterState = 'closing';
+                    shutterStatusElement.textContent = 'Fermeture manuelle...';
+                    shutterStatusElement.className = 'status-value status-closing';
+                    shutterAnimation.className = 'shutter-animation closing';
+                    
+                    setTimeout(() => {
+                        currentShutterState = 'closed';
+                        shutterStatusElement.textContent = 'Fermés (manuel)';
+                        shutterStatusElement.className = 'status-value status-closed';
+                        shutterAnimation.className = 'shutter-animation closed';
+                        openShuttersBtn.disabled = false;
+                        closeShuttersBtn.disabled = false;
+                        setTimeout(() => isManualOverride = false, 10000);
+                    }, 3000);
+                }
+            }
+
+            openShuttersBtn.addEventListener('click', () => manualShutterControl('open'));
+            closeShuttersBtn.addEventListener('click', () => manualShutterControl('close'));
 
             // Initialiser les graphiques
             function initCharts() {
@@ -318,7 +369,6 @@ if ($isLoggedIn) {
                         const temperatures = data.mesures.map(mesure => parseFloat(mesure.temperature));
                         const humidites = data.mesures.map(mesure => parseFloat(mesure.humidite));
                         
-                        // Mettre à jour les graphiques
                         temperatureChart.data.labels = labels;
                         temperatureChart.data.datasets[0].data = temperatures;
                         temperatureChart.update('none');
@@ -327,7 +377,6 @@ if ($isLoggedIn) {
                         humidityChart.data.datasets[0].data = humidites;
                         humidityChart.update('none');
                         
-                        // Mettre à jour le contrôle des volets avec la dernière température
                         if (temperatures.length > 0) {
                             const latestTemp = temperatures[temperatures.length - 1];
                             updateShutterStatus(latestTemp);
@@ -349,11 +398,9 @@ if ($isLoggedIn) {
                     const container = document.getElementById('table-container');
                     
                     if (isInitialLoad) {
-                        // Premier chargement : animation normale
                         container.innerHTML = html;
                         isInitialLoad = false;
                     } else {
-                        // Mises à jour suivantes : transition fluide sans repop
                         const newTable = document.createElement('div');
                         newTable.innerHTML = html;
                         const newTableElement = newTable.querySelector('table');
@@ -392,12 +439,10 @@ if ($isLoggedIn) {
                     } else {
                         sensorStatusDiv.textContent = 'Statut: Erreur de vérification';
                         sensorStatusDiv.className = 'sensor-status';
-
                     }
                 } catch (error) {
                     sensorStatusDiv.textContent = '';
                     sensorStatusDiv.className = 'sensor-status';
-
                 }
             }
 
@@ -435,21 +480,15 @@ if ($isLoggedIn) {
             document.addEventListener('DOMContentLoaded', function() {
                 initCharts();
                 chargerDonneesGraphiques();
-                updateSensorStatus(); // Initial sensor status check
+                updateSensorStatus();
                 
-                // Rafraîchir les graphiques toutes les 10 secondes
                 setInterval(chargerDonneesGraphiques, 2000);
-                
-                // Rafraîchir le tableau toutes les 2 secondes
                 setInterval(chargerTableau, 2000);
-
-                // Refresh sensor status every 5 seconds
                 setInterval(updateSensorStatus, 5000);
             });
         </script>
     <?php endif; ?>
     
-
     <footer>
         &copy; 2025 Projet Domotique - Tous droits réservés
     </footer>
