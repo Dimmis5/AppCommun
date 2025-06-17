@@ -48,7 +48,12 @@ Nous avons choisi le cas d’usage **gestion domotique**. Notre scénario automa
 
 ## 🧑‍🤝‍🧑 Équipe & Organisation
 
-- Travail en équipe de 5 à 6 personnes
+- Travail en équipe :
+  - ESSOME Maeva Chloe
+  - JEANNINGROS Esteban
+  - POULAIN Alexandre
+  - REYNAL DE SAINT MICHEL Hortense
+  - ZHANG Dimeo
 - Répartition des rôles :
   - Électronique : câblage, programmation microcontrôleur
   - Informatique : développement site web, base de données, design UI
