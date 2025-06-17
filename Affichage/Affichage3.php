@@ -58,7 +58,7 @@ function afficherTableau($donnees) {
                 // Affichage du servo (id_composant = 1)
                 if (isset($donnees[1])): ?>
                     <tr class="servo">
-                        <td>Servo</td>
+                        <td>ServoMoteur</td>
                         <td><?= htmlspecialchars($donnees[1]['valeur']) ?></td>
                         <td><?= $donnees[1]['valeur'] == 1 ? 'Activé' : 'Désactivé' ?></td>
                         <td><?= htmlspecialchars($donnees[1]['date']) ?></td>
