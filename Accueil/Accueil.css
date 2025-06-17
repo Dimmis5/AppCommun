@@ -1,7 +1,7 @@
-/* Import Google Fonts */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Variables CSS pour une meilleure maintenance */
+
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     --glass-bg: rgba(255, 255, 255, 0.1);
@@ -38,7 +38,7 @@ body {
     50% { background-position: 100% 50%; }
 }
 
-/* ============= HEADER ============= */
+/*  HEADER  */
 header {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -147,7 +147,7 @@ header h1::after {
     z-index: 10;
 }
 
-/* ============= NAVIGATION ============= */
+/*  NAVIGATION  */
 nav {
     display: flex;
     justify-content: center;
@@ -226,7 +226,7 @@ nav a:active {
     transform: translateY(-4px) scale(1.02);
 }
 
-/* ============= USER INFO ============= */
+/* Information utilisateur  */
 .user-info {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
@@ -328,7 +328,7 @@ nav a:active {
     text-decoration: none;
 }
 
-/* ============= GRAPHIQUES ============= */
+/*  GRAPHIQUES  */
 .charts-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -407,7 +407,7 @@ nav a:active {
     }
 }
 
-/* ============= TABLEAU ============= */
+/*  TABLEAU  */
 #table-container {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -503,7 +503,7 @@ tr:hover {
     transform: scale(1.01);
 }
 
-/* ============= FOOTER ============= */
+/*  FOOTER  */
 footer {
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
@@ -526,7 +526,7 @@ footer::before {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
-/* ============= ANIMATIONS & EFFETS ============= */
+/*  ANIMATIONS ET EFFETS  */
 body::before {
     content: '';
     position: fixed;
@@ -552,7 +552,7 @@ body::before {
     100% { transform: translateY(0px) translateX(0px); }
 }
 
-/* ============= RESPONSIVE DESIGN ============= */
+
 @media (max-width: 1200px) {
     .charts-container {
         grid-template-columns: 1fr;
@@ -737,7 +737,7 @@ body::before {
     }
 }
 
-/* ============= ACCESSIBILITÉ ============= */
+/*  ACCESSIBILITÉ POUR SE CONNECTER */
 nav a:focus {
     outline: none;
     box-shadow: 
@@ -755,7 +755,6 @@ nav a:focus {
     box-shadow: 0 0 0 3px rgba(254, 202, 87, 0.5);
 }
 
-/* Animation au survol du titre */
 header h1:hover {
     animation: titlePulse 0.6s ease-in-out;
 }
@@ -765,7 +764,6 @@ header h1:hover {
     50% { transform: scale(1.02); }
 }
 
-/* Amélioration des performances */
 .chart-wrapper,
 nav a,
 table,
@@ -774,7 +772,6 @@ table,
     will-change: transform;
 }
 
-/* Mode sombre préféré */
 @media (prefers-color-scheme: dark) {
     :root {
         --glass-bg: rgba(255, 255, 255, 0.08);
@@ -785,29 +782,28 @@ table,
 
 /* --- Boutons de Contrôle du Capteur --- */
 .sensor-control {
-    background: var(--glass-bg); /* Utilise le fond "verre" existant */
-    backdrop-filter: blur(20px); /* Ajoute le flou pour l'effet "verre" */
-    border: 1px solid var(--glass-border); /* Bordure "verre" */
-    padding: 25px 30px; /* Espacement intérieur */
-    margin: 30px auto; /* Centrage et marge */
-    border-radius: var(--border-radius); /* Bords arrondis comme les autres éléments */
-    box-shadow: var(--shadow-glass); /* Ombre de verre */
+    background: var(--glass-bg); 
+    backdrop-filter: blur(20px); 
+    border: 1px solid var(--glass-border); 
+    padding: 25px 30px; 
+    margin: 30px auto; 
+    border-radius: var(--border-radius); 
+    box-shadow: var(--shadow-glass); 
     text-align: center;
-    max-width: 800px; /* Largeur maximale cohérente */
-    width: 90%; /* Prend 90% de la largeur disponible */
-    animation: fadeIn 0.8s ease-out; /* Animation d'apparition douce */
-    position: relative; /* Pour le pseudo-élément */
-    overflow: hidden; /* Pour l'effet de brillance */
+    max-width: 800px; 
+    width: 90%; 
+    animation: fadeIn 0.8s ease-out; 
+    position: relative; 
+    overflow: hidden; 
 }
 
-/* Pseudo-élément pour la brillance ou un léger dégradé */
 .sensor-control::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 1px; /* Ligne fine en haut */
+    height: 1px; 
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 }
 
@@ -815,7 +811,7 @@ table,
     color: var(--text-white);
     font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 25px; /* Marge sous le titre */
+    margin-bottom: 25px; 
     text-shadow: var(--text-shadow);
     position: relative;
 }
@@ -823,31 +819,31 @@ table,
 .sensor-control h2::after {
     content: '';
     position: absolute;
-    bottom: -10px; /* Position sous le texte */
+    bottom: -10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 80px; /* Largeur de la ligne */
+    width: 80px;
     height: 3px;
-    background: linear-gradient(45deg, #feca57, #ff6b6b); /* Dégradé de couleur */
+    background: linear-gradient(45deg, #feca57, #ff6b6b); 
     border-radius: 2px;
 }
 
 .sensor-control button {
-    padding: 15px 30px; /* Taille de bouton confortable */
+    padding: 15px 30px; 
     font-size: 1rem;
-    font-weight: 600; /* Texte en gras */
+    font-weight: 600; 
     border: none;
-    border-radius: 50px; /* Boutons pill-shaped (en forme de pilule) */
+    border-radius: 50px; 
     cursor: pointer;
-    transition: var(--transition-smooth); /* Transition douce */
-    color: var(--text-white); /* Texte blanc */
-    margin: 0 15px; /* Espacement entre les boutons */
-    position: relative; /* Pour l'effet de brillance */
-    overflow: hidden; /* Pour l'effet de brillance */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre légère */
+    transition: var(--transition-smooth); 
+    color: var(--text-white); 
+    margin: 0 15px; 
+    position: relative; 
+    overflow: hidden; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
 }
 
-/* Effet de brillance au survol pour tous les boutons */
+
 .sensor-control button::before {
     content: '';
     position: absolute;
@@ -864,35 +860,35 @@ table,
 }
 
 .sensor-control button:hover {
-    transform: translateY(-3px); /* Léger soulèvement au survol */
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); /* Ombre plus prononcée */
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-/* Style spécifique pour le bouton Démarrer */
+
 .sensor-control button.start-btn {
-    background: linear-gradient(45deg, #28a745, #218838); /* Dégradé de vert */
-    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3); /* Ombre verte */
+    background: linear-gradient(45deg, #28a745, #218838); 
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3); 
 }
 
 .sensor-control button.start-btn:hover {
-    background: linear-gradient(45deg, #218838, #1e7e34); /* Dégradé vert plus foncé au survol */
+    background: linear-gradient(45deg, #218838, #1e7e34);
     box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
 }
 
 /* Style spécifique pour le bouton Arrêter */
 .sensor-control button.stop-btn {
-    background: linear-gradient(45deg, #dc3545, #c82333); /* Dégradé de rouge */
-    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3); /* Ombre rouge */
+    background: linear-gradient(45deg, #dc3545, #c82333); 
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3); 
 }
 
 .sensor-control button.stop-btn:hover {
-    background: linear-gradient(45deg, #c82333, #bd2130); /* Dégradé rouge plus foncé au survol */
+    background: linear-gradient(45deg, #c82333, #bd2130); 
     box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
 }
 
 /* Style pour l'état désactivé des boutons */
 .sensor-control button:disabled {
-    background: rgba(150, 150, 150, 0.5); /* Couleur grisée */
+    background: rgba(150, 150, 150, 0.5); 
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
@@ -900,24 +896,24 @@ table,
 }
 
 .sensor-control button:disabled::before {
-    display: none; /* Cache la brillance quand désactivé */
+    display: none; 
 }
 
 
 .sensor-status {
-    margin-top: 25px; /* Marge au-dessus du texte de statut */
+    margin-top: 25px;
     font-size: 1.1rem;
     font-weight: 600;
     text-shadow: var(--text-shadow);
-    color: var(--text-white); /* Couleur de base */
+    color: var(--text-white); 
 }
 
 .sensor-status.status-running {
-    color: #4CAF50; /* Vert vif pour "En cours d'exécution" */
+    color: #4CAF50; 
 }
 
 .sensor-status.status-stopped {
-    color: #f44336; /* Rouge vif pour "Arrêté" */
+    color: #f44336; 
 }
 
 /* --- Responsive pour les boutons --- */
@@ -935,7 +931,7 @@ table,
         padding: 12px 25px;
         font-size: 0.95rem;
         margin: 0 10px;
-        min-width: 120px; /* Ajuste la largeur minimale */
+        min-width: 120px;
     }
     
     .sensor-status {
@@ -956,9 +952,9 @@ table,
     }
     
     .sensor-control button {
-        display: block; /* Empile les boutons */
-        width: calc(100% - 20px); /* Prend presque toute la largeur */
-        margin: 10px auto; /* Centre et ajoute des marges verticales */
+        display: block; 
+        width: calc(100% - 20px);
+        margin: 10px auto;
         padding: 10px 20px;
         font-size: 0.9rem;
     }
@@ -969,7 +965,7 @@ table,
     }
 }
 
-/* --- Contrôle Automatique des Volets - Version Corrigée --- */
+/*Volets auto */
 .shutter-control {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -1104,24 +1100,24 @@ table,
     transition: all 0.5s ease;
 }
 
-/* === CORRECTION PRINCIPALE === */
-/* États inversés pour correspondre à la logique réelle */
+
+
 .shutter-animation.open .shutter-slat {
-    transform: translateY(100px); /* Lames cachées (fermées visuellement) */
+    transform: translateY(100px);
     opacity: 0;
 }
 
 .shutter-animation.closed .shutter-slat {
-    transform: translateY(0); /* Lames visibles (ouvertes visuellement) */
+    transform: translateY(0); 
     opacity: 1;
 }
 
 .shutter-animation.opening .shutter-slat {
-    animation: slatClose 3s forwards; /* Animation de fermeture pour l'ouverture réelle */
+    animation: slatClose 3s forwards; 
 }
 
 .shutter-animation.closing .shutter-slat {
-    animation: slatOpen 3s forwards; /* Animation d'ouverture pour la fermeture réelle */
+    animation: slatOpen 3s forwards;
 }
 
 @keyframes slatOpen {

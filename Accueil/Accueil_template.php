@@ -102,7 +102,7 @@
                 </div>
             </div>
         </div>
-
+<!-- pour les graphiques -->
         <div class="charts-container">
             <div class="chart-wrapper">
                 <h3>Évolution de la Température (100 dernières mesures)</h3>
@@ -127,7 +127,6 @@
                 let lastTemperature = null;
                 let isManualOverride = false;
 
-                // Configuration des graphiques
                 const chartConfig = {
                     type: 'line',
                     options: {
@@ -176,7 +175,7 @@
                     }
                 };
 
-                // Météo Paris extérieur
+                // Pour avoir la météo de Paris (extérieur)
                 async function fetchParisWeather() {
                     const apiKey = '5bef5060626236b534090487e06d21d0'; 
                     const city = 'Paris,FR';
@@ -192,16 +191,13 @@
                         
                         const data = await response.json();
                         
-                        // Mettre à jour l'interface
                         document.getElementById('currentOutdoorTemp').textContent = Math.round(data.main.temp);
                         document.getElementById('weatherDescription').textContent = data.weather[0].description;
                         document.getElementById('outdoorHumidity').textContent = data.main.humidity;
                         
-                        // Mettre à jour l'icône météo
                         const iconCode = data.weather[0].icon;
                         document.getElementById('weatherIcon').src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-                        
-                        // Afficher l'heure de mise à jour
+
                         const now = new Date();
                         document.getElementById('weatherUpdateTime').textContent = 
                             `Dernière mise à jour: ${now.toLocaleTimeString('fr-FR')}`;
@@ -212,7 +208,7 @@
                     }
                 }
 
-                // Fonctions pour le contrôle des volets
+                // pour voir les volets
                 function updateShutterStatus(temperature) {
                     if (isManualOverride) return;
                     
@@ -313,7 +309,7 @@
                 openShuttersBtn.addEventListener('click', () => manualShutterControl('open'));
                 closeShuttersBtn.addEventListener('click', () => manualShutterControl('close'));
 
-                // Initialiser les graphiques
+                // Graphique
                 function initCharts() {
                     const tempCtx = document.getElementById('temperatureChart').getContext('2d');
                     const humCtx = document.getElementById('humidityChart').getContext('2d');
@@ -419,7 +415,7 @@
                     }
                 }
 
-                // --- Sensor Control Logic ---
+                // Pour le capteur
                 const startSensorBtn = document.getElementById('startSensorBtn');
                 const stopSensorBtn = document.getElementById('stopSensorBtn');
                 const sensorStatusDiv = document.getElementById('sensorStatus');
@@ -477,12 +473,12 @@
                 startSensorBtn.addEventListener('click', () => controlSensor('start'));
                 stopSensorBtn.addEventListener('click', () => controlSensor('stop'));
 
-                // Initialiser au chargement de la page
+
                 document.addEventListener('DOMContentLoaded', function() {
                     initCharts();
                     chargerDonneesGraphiques();
                     updateSensorStatus();
-                    fetchParisWeather(); // Charger la météo au démarrage
+                    fetchParisWeather(); 
                     
                     setInterval(chargerDonneesGraphiques, 2000);
                     setInterval(chargerTableau, 2000);

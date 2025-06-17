@@ -15,7 +15,7 @@ if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH
     exit;
 }
 
-// Paramètres de connexion à la base MySQL
+//  Connexion à la base MySQL
 $host = 'localhost';
 $dbname = 'mesures_dht11';
 $user = 'arduino_user';
@@ -25,14 +25,13 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Récupérer les 100 dernières mesures, triées par date croissante pour l'affichage du graphique
+    // Récupérer les 100 dernières mesures et trié
     $stmt = $pdo->query("SELECT temperature, humidite, date_mesure FROM mesures ORDER BY date_mesure DESC LIMIT 100");
     $mesures = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Inverser l'ordre pour avoir les plus anciennes en premier (pour un affichage chronologique correct)
+    // Inverser l'ordre pour avoir les plus anciennes en premier 
     $mesures = array_reverse($mesures);
     
-    // Retourner les données en JSON
     header('Content-Type: application/json');
     echo json_encode([
         'success' => true,

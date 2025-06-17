@@ -1,5 +1,5 @@
 <?php
-// Paramètres de connexion à la base MySQL
+// Connexion à la base MySQL
 $host = 'localhost';
 $dbname = 'mesures_dht11';
 $user = 'arduino_user';
