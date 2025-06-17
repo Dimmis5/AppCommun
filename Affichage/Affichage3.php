@@ -79,7 +79,7 @@ function afficherTableau($donnees) {
                 // Affichage de la température (id_composant = 6)
                 if (isset($donnees[6])): ?>
                     <tr class="temperature">
-                        <td>Température</td>
+                        <td><a href="../capteur/temperature.php" style="color: inherit; text-decoration: none;">Température</a></td>
                         <td><?= htmlspecialchars($donnees[6]['valeur']) ?></td>
                         <td>°C</td>
                         <td><?= htmlspecialchars($donnees[6]['date']) ?></td>
@@ -90,7 +90,7 @@ function afficherTableau($donnees) {
                 // Affichage de l'humidité (id_composant = 7)
                 if (isset($donnees[7])): ?>
                     <tr class="humidite">
-                        <td>Humidité</td>
+                        <td><a href="../capteur/humidite.php" style="color: inherit; text-decoration: none;">Humidité</a></td>
                         <td><?= htmlspecialchars($donnees[7]['valeur']) ?></td>
                         <td>%</td>
                         <td><?= htmlspecialchars($donnees[7]['date']) ?></td>

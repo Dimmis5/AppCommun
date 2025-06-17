@@ -1,7 +1,7 @@
+/* humidity-style.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-
     --primary-gradient: linear-gradient(135deg, #b0a1b4 0%, rgb(118, 75, 162) 50%, #6a3093 100%);
     --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
@@ -12,6 +12,7 @@
     --border-radius: 20px;
     --chart-bg: rgba(255, 255, 255, 0.08);
     --chart-border: rgba(255, 255, 255, 0.15);
+    --highlight-color: #b948fb;
 }
 
 * {
@@ -27,6 +28,7 @@ body {
     min-height: 100vh;
     color: var(--text-white);
     padding: 20px;
+    line-height: 1.6;
 }
 
 @keyframes gradientShift {
@@ -40,10 +42,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 25px;
-}
-
-.home-button-container {
-    margin-bottom: 10px;
 }
 
 .home-button {
@@ -85,7 +83,7 @@ body {
     left: 100%;
 }
 
-.current-value, .graph-container {
+.current-value, .chart-container {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
@@ -99,7 +97,7 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.current-value h2, .graph-container h2 {
+.current-value h2, .chart-container h2 {
     color: var(--text-white);
     font-size: 1.5rem;
     margin-bottom: 20px;
@@ -107,14 +105,14 @@ body {
     position: relative;
 }
 
-.current-value h2::after, .graph-container h2::after {
+.current-value h2::after, .chart-container h2::after {
     content: '';
     position: absolute;
     bottom: -8px;
     left: 0;
     width: 60px;
     height: 3px;
-    background: linear-gradient(45deg, #48dbfb, #ff6b6b);
+    background: linear-gradient(45deg, var(--highlight-color), #ff6b6b);
     border-radius: 2px;
 }
 
@@ -125,7 +123,6 @@ table {
     backdrop-filter: blur(10px);
     border-radius: 15px;
     overflow: hidden;
-
 }
 
 th, td {
@@ -154,7 +151,7 @@ tr:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 
-#luminosityChart {
+#humidityChart {
     width: 100% !important;
     height: 400px !important;
     background: var(--chart-bg);
@@ -177,7 +174,6 @@ body::before {
         radial-gradient(1px 1px at 160px 30px, rgba(255, 255, 255, 0.4), transparent);
     background-repeat: repeat;
     background-size: 200px 100px;
-    animation: float 20s linear infinite;
     pointer-events: none;
     z-index: -1;
 }
@@ -195,7 +191,7 @@ body::before {
         padding: 15px;
     }
     
-    .current-value, .graph-container {
+    .current-value, .chart-container {
         padding: 20px;
     }
     
@@ -204,7 +200,7 @@ body::before {
         font-size: 0.9rem;
     }
     
-    #luminosityChart {
+    #humidityChart {
         height: 300px !important;
     }
 }
@@ -214,7 +210,7 @@ body::before {
         padding: 10px;
     }
     
-    .current-value h2, .graph-container h2 {
+    .current-value h2, .chart-container h2 {
         font-size: 1.3rem;
     }
     
@@ -228,7 +224,34 @@ body::before {
         font-size: 0.85rem;
     }
     
-    #luminosityChart {
+    #humidityChart {
         height: 250px !important;
     }
+}
+
+
+.humidity-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--highlight-color);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin: 10px 0;
+}
+
+.humidity-unit {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.current-value p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.current-value strong {
+    font-weight: 600;
+    min-width: 120px;
+    display: inline-block;
 }
