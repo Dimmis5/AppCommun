@@ -94,10 +94,10 @@
                 </div>
                 <div class="shutter-rules">
                     <div class="rule-item">
-                        <span class="rule-text">T° ≥ 28°C → Fermeture automatique (3s)</span>
+                        <span class="rule-text">T° ≥ 28°C → Fermeture automatique </span>
                     </div>
                     <div class="rule-item">
-                        <span class="rule-text">T° ≤ 27°C → Ouverture automatique (3s)</span>
+                        <span class="rule-text">T° ≤ 27°C → Ouverture automatique </span>
                     </div>
                 </div>
             </div>
