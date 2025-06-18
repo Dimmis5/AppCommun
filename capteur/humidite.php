@@ -8,8 +8,7 @@ $password = 'afyubr';
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // Récupération des 100 dernières mesures d'humidité (id_composant = 7)
+
     $stmt = $pdo->prepare("
         SELECT 
             m.valeur,
@@ -21,11 +20,9 @@ try {
     ");
     $stmt->execute();
     $mesures = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Inverser l'ordre pour avoir du plus ancien au plus récent (pour le graphique)
+
     $mesures = array_reverse($mesures);
-    
-    // Récupération de la dernière mesure d'humidité
+
     $stmt = $pdo->prepare("
         SELECT 
             m.valeur,
@@ -49,9 +46,8 @@ try {
     <meta charset="UTF-8">
     <title>Tempérium - Humidité</title>
     <link rel="icon" href="../logo/logo.png" type="image/x-icon">
-    <link rel="stylesheet" href="humidite.css">
+    <link rel="stylesheet" href="capteur.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 <body>
     <div class="container">
@@ -61,7 +57,6 @@ try {
             </a>
             <a href ="../Affichage/Affichage3.php" class ="home-button"> Retour </a>
         </div>
-        
         <h1>Données d'humidité</h1>
         
         <div class="current-value">
@@ -74,15 +69,29 @@ try {
             <canvas id="humidityChart"></canvas>
         </div>
         
-
+        <h2>Historique récent (100 dernières mesures)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date et heure</th>
+                    <th>Humidité (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach (array_reverse($mesures) as $mesure): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($mesure['date']); ?></td>
+                        <td><?php echo htmlspecialchars($mesure['valeur']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 
     <script>
-        // Préparation des données pour le graphique
         const dates = <?php echo json_encode(array_column($mesures, 'date')); ?>;
         const valeurs = <?php echo json_encode(array_column($mesures, 'valeur')); ?>;
         
-        // Configuration du graphique
         const ctx = document.getElementById('humidityChart').getContext('2d');
         const humidityChart = new Chart(ctx, {
             type: 'line',
@@ -137,7 +146,6 @@ try {
             }
         });
         
-        // Fonction pour actualiser les données toutes les 30 secondes
         function refreshData() {
             fetch(window.location.href + '?refresh=1')
                 .then(response => response.text())
@@ -145,10 +153,8 @@ try {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     
-                    // Mettre à jour le tableau
                     document.querySelector('table tbody').innerHTML = doc.querySelector('table tbody').innerHTML;
                     
-                    // Mettre à jour la valeur actuelle
                     const currentValueDiv = doc.querySelector('.current-value');
                     if (currentValueDiv) {
                         document.querySelector('.current-value').innerHTML = currentValueDiv.innerHTML;
@@ -156,8 +162,7 @@ try {
                 })
                 .catch(error => console.error('Erreur lors de la mise à jour:', error));
         }
-        
-        // Actualiser toutes les 30 secondes
+        s
         setInterval(refreshData, 2000);
     </script>
 </body>

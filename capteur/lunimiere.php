@@ -45,7 +45,7 @@ try {
     <meta charset="UTF-8" />
     <title>Tempérium - Historique Luminosité</title>
     <link rel="icon" href="../logo/logo.png" type="image/x-icon">
-    <link rel="stylesheet" href="lumiere.css">
+    <link rel="stylesheet" href="capteur.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -83,6 +83,24 @@ try {
         </div>
     </div>
 
+            <h2>Historique récent (100 dernières mesures)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date et heure</th>
+                    <th>Luminosité (Lux)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach (array_reverse($mesures) as $mesure): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($mesure['date']); ?></td>
+                        <td><?php echo htmlspecialchars($mesure['valeur']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
     <script>
         const dates = <?= json_encode(array_column($mesures, 'date')) ?>;
         const valeurs = <?= json_encode(array_column($mesures, 'valeur')) ?>;

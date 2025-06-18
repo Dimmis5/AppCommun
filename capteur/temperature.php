@@ -9,7 +9,6 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Récupération de la dernière mesure de température
     $currentStmt = $pdo->prepare("
         SELECT 
             c.nom as nom_capteur,
@@ -25,7 +24,6 @@ try {
     $currentStmt->execute();
     $currentTemp = $currentStmt->fetch(PDO::FETCH_ASSOC);
     
-    // Récupération des 100 dernières mesures de température
     $historyStmt = $pdo->prepare("
         SELECT 
             m.valeur,
@@ -38,7 +36,6 @@ try {
     $historyStmt->execute();
     $tempHistory = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Préparation des données pour le graphique (inverser l'ordre pour avoir du plus ancien au plus récent)
     $tempHistory = array_reverse($tempHistory);
     $labels = [];
     $values = [];
@@ -59,9 +56,8 @@ try {
     <meta charset="UTF-8">
     <title>Historique Température</title>
     <link rel="icon" href="../logo/logo.png" type="image/x-icon">
-    <link rel="stylesheet" href="temperature.css">
+    <link rel="stylesheet" href="capteur.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 <body>
     <div class="container">
@@ -101,9 +97,35 @@ try {
                 </tbody>
             </table>
         </div>
+
+        
         
         <div class="chart-container">
             <canvas id="tempChart"></canvas>
+        </div>
+        <br>
+    </div>
+
+            <div class="history-table">
+            <h2>100 dernières mesures</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date et Heure</th>
+                            <th>Température (°C)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach (array_reverse($tempHistory) as $measure): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($measure['date']) ?></td>
+                            <td><?= htmlspecialchars($measure['valeur']) ?> °C</td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -162,7 +184,6 @@ try {
                 }
             });
             
-            // Rafraîchissement automatique toutes les 30 secondes
             setInterval(() => {
                 fetch(window.location.href)
                     .then(response => response.text())
