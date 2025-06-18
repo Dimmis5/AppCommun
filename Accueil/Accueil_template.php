@@ -177,7 +177,7 @@
 
                 // Pour avoir la météo de Paris (extérieur)
                 async function fetchParisWeather() {
-                    const apiKey = '5bef5060626236b534090487e06d21d0'; 
+                    const apiKey = 'b553bf515578e25be910fffcf28e5dc7'; 
                     const city = 'Paris,FR';
                     const lang = 'fr';
                     const units = 'metric';
