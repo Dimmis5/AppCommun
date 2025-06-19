@@ -9,6 +9,7 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
+    // Récupération des données initiales pour le premier chargement
     $currentStmt = $pdo->prepare("
         SELECT 
             c.nom as nom_capteur,
@@ -36,15 +37,6 @@ try {
     $historyStmt->execute();
     $tempHistory = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
     
-    $tempHistory = array_reverse($tempHistory);
-    $labels = [];
-    $values = [];
-    
-    foreach ($tempHistory as $measure) {
-        $labels[] = date('H:i:s', strtotime($measure['date']));
-        $values[] = $measure['valeur'];
-    }
-    
 } catch (PDOException $e) {
     die("Erreur de connexion ou de requête : " . $e->getMessage());
 }
@@ -65,7 +57,7 @@ try {
             <a href="../Accueil/Accueil.php" class="home-button">
                 Accueil
             </a>
-            <a href ="../Affichage/Affichage3.php" class ="home-button"> Retour </a>
+            <a href="../Affichage/Affichage3.php" class="home-button">Retour</a>
         </div>
         
         <h1>Historique de la Température</h1>
@@ -81,7 +73,7 @@ try {
                         <th>Date de la mesure</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="currentTempData">
                     <?php if ($currentTemp): ?>
                     <tr>
                         <td>Température</td>
@@ -98,47 +90,47 @@ try {
             </table>
         </div>
 
-        
-        
         <div class="chart-container">
             <canvas id="tempChart"></canvas>
         </div>
         <br>
     </div>
 
-            <div class="history-table">
-            <h2>100 dernières mesures</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date et Heure</th>
-                            <th>Température (°C)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach (array_reverse($tempHistory) as $measure): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($measure['date']) ?></td>
-                            <td><?= htmlspecialchars($measure['valeur']) ?> °C</td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+    <div class="history-table">
+        <h2>100 dernières mesures</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date et Heure</th>
+                        <th>Température (°C)</th>
+                    </tr>
+                </thead>
+                <tbody id="historyData">
+                    <?php foreach (array_reverse($tempHistory) as $measure): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($measure['date']) ?></td>
+                        <td><?= htmlspecialchars($measure['valeur']) ?> °C</td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        let tempChart;
+
+        // Fonction pour créer le graphique initial
+        function createInitialChart() {
             const ctx = document.getElementById('tempChart').getContext('2d');
-            const tempChart = new Chart(ctx, {
+            tempChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: <?= json_encode($labels) ?>,
+                    labels: [],
                     datasets: [{
                         label: 'Température (°C)',
-                        data: <?= json_encode($values) ?>,
+                        data: [],
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         borderColor: 'rgb(255, 159, 64)',
                         borderWidth: 3.5,
@@ -183,19 +175,55 @@ try {
                     }
                 }
             });
-            
-            setInterval(() => {
-                fetch(window.location.href)
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const newScript = doc.querySelector('script');
-                        if (newScript) {
-                            eval(newScript.textContent);
-                        }
+        }
+
+        // Fonction pour récupérer les nouvelles données
+        function fetchData() {
+            fetch('get_temp_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    const currentTempHtml = data.current ? `
+                        <tr>
+                            <td>Température</td>
+                            <td>${data.current.valeur}</td>
+                            <td>°C</td>
+                            <td>${data.current.date}</td>
+                        </tr>
+                    ` : `
+                        <tr>
+                            <td colspan="4">Aucune donnée disponible</td>
+                        </tr>
+                    `;
+                    document.getElementById('currentTempData').innerHTML = currentTempHtml;
+
+                    let historyHtml = '';
+                    data.history.reverse().forEach(measure => {
+                        historyHtml += `
+                            <tr>
+                                <td>${measure.date}</td>
+                                <td>${measure.valeur} °C</td>
+                            </tr>
+                        `;
                     });
-            }, 2000);
+                    document.getElementById('historyData').innerHTML = historyHtml;
+
+                    tempChart.data.labels = data.labels;
+                    tempChart.data.datasets[0].data = data.values;
+                    tempChart.update();
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createInitialChart();
+            fetchData();
+            
+            setInterval(fetchData, 2000);
         });
     </script>
 </body>

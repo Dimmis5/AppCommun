@@ -8,32 +8,34 @@ $password = 'afyubr';
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    $stmt = $pdo->prepare("
+    
+    // Récupération des données initiales pour le premier chargement
+    $currentStmt = $pdo->prepare("
         SELECT 
+            c.nom as nom_capteur,
             m.valeur,
-            m.date
+            m.date,
+            c.id as id_composant
         FROM mesure m
-        WHERE m.id_composant = 7
-        ORDER BY m.date DESC
-        LIMIT 100
-    ");
-    $stmt->execute();
-    $mesures = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $mesures = array_reverse($mesures);
-
-    $stmt = $pdo->prepare("
-        SELECT 
-            m.valeur,
-            m.date
-        FROM mesure m
-        WHERE m.id_composant = 7
+        INNER JOIN composant c ON m.id_composant = c.id
+        WHERE c.id = 7 -- Humidité
         ORDER BY m.date DESC
         LIMIT 1
     ");
-    $stmt->execute();
-    $derniere_mesure = $stmt->fetch(PDO::FETCH_ASSOC);
+    $currentStmt->execute();
+    $currentHumidity = $currentStmt->fetch(PDO::FETCH_ASSOC);
+    
+    $historyStmt = $pdo->prepare("
+        SELECT 
+            m.valeur,
+            m.date
+        FROM mesure m
+        WHERE m.id_composant = 7 -- Humidité
+        ORDER BY m.date DESC
+        LIMIT 100
+    ");
+    $historyStmt->execute();
+    $humidityHistory = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
     
 } catch (PDOException $e) {
     die("Erreur de connexion ou de requête : " . $e->getMessage());
@@ -55,115 +57,177 @@ try {
             <a href="../Accueil/Accueil.php" class="home-button">
                 Accueil
             </a>
-            <a href ="../Affichage/Affichage3.php" class ="home-button"> Retour </a>
+            <a href="../Affichage/Affichage3.php" class="home-button">Retour</a>
         </div>
+        
         <h1>Données d'humidité</h1>
         
         <div class="current-value">
             <h2>Valeur actuelle</h2>
-            <p><strong>Humidité :</strong> <?php echo htmlspecialchars($derniere_mesure['valeur']); ?> %</p>
-            <p><strong>Dernière mise à jour :</strong> <?php echo htmlspecialchars($derniere_mesure['date']); ?></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type de Capteur</th>
+                        <th>Valeur</th>
+                        <th>Unité</th>
+                        <th>Date de la mesure</th>
+                    </tr>
+                </thead>
+                <tbody id="currentHumidityData">
+                    <?php if ($currentHumidity): ?>
+                    <tr>
+                        <td>Humidité</td>
+                        <td><?= htmlspecialchars($currentHumidity['valeur']) ?></td>
+                        <td>%</td>
+                        <td><?= htmlspecialchars($currentHumidity['date']) ?></td>
+                    </tr>
+                    <?php else: ?>
+                    <tr>
+                        <td colspan="4">Aucune donnée disponible</td>
+                    </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
-        
+
         <div class="chart-container">
             <canvas id="humidityChart"></canvas>
         </div>
-        
-        <h2>Historique récent (100 dernières mesures)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date et heure</th>
-                    <th>Humidité (%)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach (array_reverse($mesures) as $mesure): ?>
+        <br>
+    </div>
+
+    <div class="history-table">
+        <h2>100 dernières mesures</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
                     <tr>
-                        <td><?php echo htmlspecialchars($mesure['date']); ?></td>
-                        <td><?php echo htmlspecialchars($mesure['valeur']); ?></td>
+                        <th>Date et Heure</th>
+                        <th>Humidité (%)</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="historyData">
+                    <?php foreach (array_reverse($humidityHistory) as $measure): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($measure['date']) ?></td>
+                        <td><?= htmlspecialchars($measure['valeur']) ?> %</td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        const dates = <?php echo json_encode(array_column($mesures, 'date')); ?>;
-        const valeurs = <?php echo json_encode(array_column($mesures, 'valeur')); ?>;
-        
-        const ctx = document.getElementById('humidityChart').getContext('2d');
-        const humidityChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: dates,
-                datasets: [{
-                    label: 'Humidité (%)',
-                    data: valeurs,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgb(255, 159, 64)',
-                    borderWidth: 3.5,
-                    tension: 0.1,
-                    pointRadius: 2,
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        title: {
-                            display: true,
-                            text: 'Humidité (%)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Date et heure'
+        let humidityChart;
+
+        // Fonction pour créer le graphique initial
+        function createInitialChart() {
+            const ctx = document.getElementById('humidityChart').getContext('2d');
+            humidityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Humidité (%)',
+                        data: [],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgb(75, 192, 192)',
+                        borderWidth: 3.5,
+                        tension: 0.1,
+                        pointRadius: 2,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            title: {
+                                display: true,
+                                text: 'Humidité (%)'
+                            }
                         },
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 45
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Heure de la mesure'
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
                         }
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
                     },
-                    legend: {
-                        position: 'top',
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
                     }
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
                 }
-            }
-        });
-        
-        function refreshData() {
-            fetch(window.location.href + '?refresh=1')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    document.querySelector('table tbody').innerHTML = doc.querySelector('table tbody').innerHTML;
-                    
-                    const currentValueDiv = doc.querySelector('.current-value');
-                    if (currentValueDiv) {
-                        document.querySelector('.current-value').innerHTML = currentValueDiv.innerHTML;
-                    }
-                })
-                .catch(error => console.error('Erreur lors de la mise à jour:', error));
+            });
         }
-        s
-        setInterval(refreshData, 2000);
+
+        // Fonction pour récupérer les nouvelles données
+        function fetchData() {
+            fetch('get_humidity_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    const currentHumidityHtml = data.current ? `
+                        <tr>
+                            <td>Humidité</td>
+                            <td>${data.current.valeur}</td>
+                            <td>%</td>
+                            <td>${data.current.date}</td>
+                        </tr>
+                    ` : `
+                        <tr>
+                            <td colspan="4">Aucune donnée disponible</td>
+                        </tr>
+                    `;
+                    document.getElementById('currentHumidityData').innerHTML = currentHumidityHtml;
+
+                    let historyHtml = '';
+                    data.history.reverse().forEach(measure => {
+                        historyHtml += `
+                            <tr>
+                                <td>${measure.date}</td>
+                                <td>${measure.valeur} %</td>
+                            </tr>
+                        `;
+                    });
+                    document.getElementById('historyData').innerHTML = historyHtml;
+
+                    humidityChart.data.labels = data.labels;
+                    humidityChart.data.datasets[0].data = data.values;
+                    humidityChart.update();
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createInitialChart();
+            fetchData(); 
+            
+            setInterval(fetchData, 2000);
+        });
     </script>
 </body>
 </html>

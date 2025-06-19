@@ -9,7 +9,23 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    $stmt = $pdo->prepare("
+    // Récupération des données initiales pour le premier chargement
+    $currentStmt = $pdo->prepare("
+        SELECT 
+            c.nom as nom_capteur,
+            m.valeur,
+            m.date,
+            c.id as id_composant
+        FROM mesure m
+        INNER JOIN composant c ON m.id_composant = c.id
+        WHERE c.id = 2 -- Luminosité
+        ORDER BY m.date DESC
+        LIMIT 1
+    ");
+    $currentStmt->execute();
+    $currentLight = $currentStmt->fetch(PDO::FETCH_ASSOC);
+    
+    $historyStmt = $pdo->prepare("
         SELECT 
             m.valeur,
             m.date
@@ -18,21 +34,8 @@ try {
         ORDER BY m.date DESC
         LIMIT 100
     ");
-    $stmt->execute();
-    $mesures = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $mesures = array_reverse($mesures);
-
-    $stmt = $pdo->prepare("
-        SELECT 
-            m.valeur,
-            m.date
-        FROM mesure m
-        WHERE m.id_composant = 2 -- Luminosité
-        ORDER BY m.date DESC
-        LIMIT 1
-    ");
-    $stmt->execute();
-    $derniere_mesure = $stmt->fetch(PDO::FETCH_ASSOC);
+    $historyStmt->execute();
+    $lightHistory = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
     
 } catch (PDOException $e) {
     die("Erreur de connexion ou de requête : " . $e->getMessage());
@@ -42,8 +45,8 @@ try {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <title>Tempérium - Historique Luminosité</title>
+    <meta charset="UTF-8">
+    <title>Tempérium - Luminosité</title>
     <link rel="icon" href="../logo/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="capteur.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -54,92 +57,174 @@ try {
             <a href="../Accueil/Accueil.php" class="home-button">
                 Accueil
             </a>
-            <a href ="../Affichage/Affichage3.php" class ="home-button"> Retour </a>
+            <a href="../Affichage/Affichage3.php" class="home-button">Retour</a>
         </div>
-
+        
+        <h1>Données de luminosité</h1>
+        
         <div class="current-value">
-            <h2>Valeur actuelle de luminosité</h2>
+            <h2>Valeur actuelle</h2>
             <table>
                 <thead>
                     <tr>
+                        <th>Type de Capteur</th>
                         <th>Valeur</th>
                         <th>Unité</th>
                         <th>Date de la mesure</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="currentLightData">
+                    <?php if ($currentLight): ?>
                     <tr>
-                        <td><?= htmlspecialchars($derniere_mesure['valeur']) ?></td>
+                        <td>Luminosité</td>
+                        <td><?= htmlspecialchars($currentLight['valeur']) ?></td>
                         <td>lux</td>
-                        <td><?= htmlspecialchars($derniere_mesure['date']) ?></td>
+                        <td><?= htmlspecialchars($currentLight['date']) ?></td>
                     </tr>
+                    <?php else: ?>
+                    <tr>
+                        <td colspan="4">Aucune donnée disponible</td>
+                    </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
-        <div class="graph-container">
-            <h2>Historique des 100 dernières mesures</h2>
-            <canvas id="luminosityChart"></canvas>
+        <div class="chart-container">
+            <canvas id="lightChart"></canvas>
+        </div>
+        <br>
+    </div>
+
+    <div class="history-table">
+        <h2>100 dernières mesures</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date et Heure</th>
+                        <th>Luminosité (lux)</th>
+                    </tr>
+                </thead>
+                <tbody id="historyData">
+                    <?php foreach (array_reverse($lightHistory) as $measure): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($measure['date']) ?></td>
+                        <td><?= htmlspecialchars($measure['valeur']) ?> lux</td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
-            <h2>Historique récent (100 dernières mesures)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date et heure</th>
-                    <th>Luminosité (Lux)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach (array_reverse($mesures) as $mesure): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($mesure['date']); ?></td>
-                        <td><?php echo htmlspecialchars($mesure['valeur']); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
     <script>
-        const dates = <?= json_encode(array_column($mesures, 'date')) ?>;
-        const valeurs = <?= json_encode(array_column($mesures, 'valeur')) ?>;
+        let lightChart;
 
-        const ctx = document.getElementById('luminosityChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: dates,
-                datasets: [{
-                    label: 'Luminosité (lux)',
-                    data: valeurs,
-                    borderColor: 'rgb(255, 159, 64)',
-                    tension: 0.1,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Date et heure'
+        // Fonction pour créer le graphique initial
+        function createInitialChart() {
+            const ctx = document.getElementById('lightChart').getContext('2d');
+            lightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Luminosité (lux)',
+                        data: [],
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgb(255, 159, 64)',
+                        borderWidth: 3.5,
+                        tension: 0.1,
+                        pointRadius: 2,
+                        pointBackgroundColor: 'rgba(255, 206, 86, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Luminosité (lux)'
+                            }
                         },
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 45
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Heure de la mesure'
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
                         }
                     },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Luminosité (lux)'
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
                         },
-                        beginAtZero: true
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
                     }
                 }
-            }
+            });
+        }
+
+        // Fonction pour récupérer les nouvelles données
+        function fetchData() {
+            fetch('get_light_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    const currentLightHtml = data.current ? `
+                        <tr>
+                            <td>Luminosité</td>
+                            <td>${data.current.valeur}</td>
+                            <td>lux</td>
+                            <td>${data.current.date}</td>
+                        </tr>
+                    ` : `
+                        <tr>
+                            <td colspan="4">Aucune donnée disponible</td>
+                        </tr>
+                    `;
+                    document.getElementById('currentLightData').innerHTML = currentLightHtml;
+
+                    let historyHtml = '';
+                    data.history.reverse().forEach(measure => {
+                        historyHtml += `
+                            <tr>
+                                <td>${measure.date}</td>
+                                <td>${measure.valeur} lux</td>
+                            </tr>
+                        `;
+                    });
+                    document.getElementById('historyData').innerHTML = historyHtml;
+
+                    lightChart.data.labels = data.labels;
+                    lightChart.data.datasets[0].data = data.values;
+                    lightChart.update();
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createInitialChart();
+            fetchData(); 
+            
+            setInterval(fetchData, 2000);
         });
     </script>
 </body>
