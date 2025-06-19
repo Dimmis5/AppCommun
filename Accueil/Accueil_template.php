@@ -483,7 +483,7 @@
                     setInterval(chargerDonneesGraphiques, 2000);
                     setInterval(chargerTableau, 2000);
                     setInterval(updateSensorStatus, 5000);
-                    setInterval(fetchParisWeather, 30 * 60 * 1000); // Actualiser la météo toutes les 30 minutes
+                    setInterval(fetchParisWeather, 30 * 60 * 1000);
                 });
             </script>
         <?php endif; ?>
