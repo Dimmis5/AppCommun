@@ -140,9 +140,9 @@ try {
                         label: 'Température (°C)',
                         data: <?= json_encode($values) ?>,
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1,
-                        tension: 0.1,
+                        borderColor: 'rgb(255, 159, 64)',
+                        borderWidth: 3.5,
+                        tension: 0.5,
                         pointRadius: 2
                     }]
                 },

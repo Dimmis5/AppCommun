@@ -101,8 +101,8 @@ try {
                     label: 'Humidité (%)',
                     data: valeurs,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 2,
+                    borderColor: 'rgb(255, 159, 64)',
+                    borderWidth: 3.5,
                     tension: 0.1,
                     pointRadius: 2,
                     pointBackgroundColor: 'rgba(54, 162, 235, 1)'
