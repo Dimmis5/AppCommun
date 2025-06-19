@@ -546,3 +546,32 @@ td[colspan="4"] {
         --glass-border: rgba(255, 255, 255, 0.15);
     }
 }
+/* Styles spécifiques pour le capteur de distance */
+.distance {
+    position: relative;
+}
+
+.distance td:nth-child(1) {
+    color: #feca57;
+    font-weight: 600;
+    position: relative;
+}
+
+.distance td:nth-child(1)::before {
+    margin-right: 8px;
+    font-size: 1.2rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.distance td:nth-child(2) {
+    color: #200202;
+    font-weight: 700;
+    font-size: 1.4rem;
+    position: relative;
+}
+
+.distance td:nth-child(3) {
+    color: #48dbfb;
+    font-weight: 700;
+    font-size: 1.4rem;
+}

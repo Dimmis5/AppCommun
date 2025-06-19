@@ -27,12 +27,19 @@ try {
     ");
     $stmt->execute();
     $mesures = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Organisation des données par type de capteur
+
     $donnees = [];
     foreach ($mesures as $mesure) {
         $donnees[$mesure['id_composant']] = $mesure;
     }
+    
+    // Ajout de données fictives pour le capteur de distance 
+    $donnees[8] = [
+        'nom_capteur' => 'Distance',
+        'valeur' => rand(10,250), 
+        'date' => date('Y-m-d H:i:s'),
+        'id_composant' => 8
+    ];
     
 } catch (PDOException $e) {
     die("Erreur de connexion ou de requête : " . $e->getMessage());
@@ -93,6 +100,17 @@ function afficherTableau($donnees) {
                         <td><?= htmlspecialchars($donnees[7]['valeur']) ?></td>
                         <td>%</td>
                         <td><?= htmlspecialchars($donnees[7]['date']) ?></td>
+                    </tr>
+                <?php endif; ?>
+                
+                <?php 
+                // Affichage de la distance 
+                if (isset($donnees[8])): ?>
+                    <tr class="distance">
+                        <td><a href="../capteur/distance.php" style="color: inherit; text-decoration: none;">Distance</a></td>
+                        <td><?= htmlspecialchars($donnees[8]['valeur']) ?></td>
+                        <td>cm</td>
+                        <td><?= htmlspecialchars($donnees[8]['date']) ?></td>
                     </tr>
                 <?php endif; ?>
                 
